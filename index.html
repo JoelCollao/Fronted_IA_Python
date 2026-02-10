@@ -1,13 +1,31 @@
-<!doctype html>
-<html lang="es">
-  <head>
+<!DOCTYPE html>
+<html>
+<head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GIS Application - React + Leaflet</title>
-  </head>
-  <body>
+    <link rel="stylesheet" href="css/chatbox.css">
+</head>
+<body>
     <div id="root"></div>
+    <div id="chatbox-wrapper"></div>
     <script type="module" src="/src/main.tsx"></script>
-  </body>
+    <script>
+        // Función para cargar el chatbox
+        function loadChatbox() {
+            fetch('pages/chatbox.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('chatbox-wrapper').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading chatbox:', error);
+                });
+        }
+        
+        // Cargar el chatbox cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', loadChatbox);
+    </script>
+</body>
 </html>

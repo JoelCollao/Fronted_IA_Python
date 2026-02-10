@@ -1,0 +1,116 @@
+<div id="chatbox-container" class="chatbox-container">
+    <div class="chatbox-header" onclick="toggleChatbox()">
+        <span class="chatbox-title">Chat AI Assistant</span>
+        <span class="chatbox-toggle" id="chatbox-toggle">−</span>
+    </div>
+    <div class="chatbox-content" id="chatbox-content">
+        <div class="chatbox-messages" id="chatbox-messages">
+            <div class="message bot-message">
+                ¡Hola! Soy tu asistente de IA. ¿En qué puedo ayudarte?
+            </div>
+        </div>
+        <div class="chatbox-input-container">
+            <input type="text" id="chatbox-input" placeholder="Escribe tu mensaje..." onkeypress="handleChatboxEnter(event)">
+            <button onclick="sendMessage()" class="chatbox-send-btn">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let chatboxMinimized = false;
+
+function toggleChatbox() {
+    const content = document.getElementById('chatbox-content');
+    const toggle = document.getElementById('chatbox-toggle');
+    
+    chatboxMinimized = !chatboxMinimized;
+    
+    if (chatboxMinimized) {
+        content.style.display = 'none';
+        toggle.textContent = '+';
+    } else {
+        content.style.display = 'flex';
+        toggle.textContent = '−';
+    }
+}
+
+function handleChatboxEnter(event) {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+}
+
+async function sendMessage() {
+    const input = document.getElementById('chatbox-input');
+    const messagesContainer = document.getElementById('chatbox-messages');
+    
+    if (input.value.trim() === '') return;
+    
+    const userMessageText = input.value.trim();
+    
+    // Agregar mensaje del usuario
+    const userMessage = document.createElement('div');
+    userMessage.className = 'message user-message';
+    userMessage.textContent = userMessageText;
+    messagesContainer.appendChild(userMessage);
+    
+    // Limpiar input y scroll
+    input.value = '';
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Mostrar indicador de escritura
+    const typingIndicator = document.createElement('div');
+    typingIndicator.className = 'message bot-message typing-indicator';
+    typingIndicator.innerHTML = '<span class="typing-dots">●●●</span> Escribiendo...';
+    messagesContainer.appendChild(typingIndicator);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    try {
+        // Llamar al endpoint del backend
+        const response = await fetch('http://localhost:5000/api/agent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: userMessageText
+            })
+        });
+        
+        // Remover indicador de escritura
+        messagesContainer.removeChild(typingIndicator);
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            // Agregar respuesta del bot
+            const botMessage = document.createElement('div');
+            botMessage.className = 'message bot-message';
+            botMessage.textContent = data.response || data.message || 'Respuesta recibida del servidor';
+            messagesContainer.appendChild(botMessage);
+        } else {
+            // Manejar errores de respuesta
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'message bot-message error-message';
+            errorMessage.textContent = 'Lo siento, hubo un error al procesar tu mensaje. Intenta de nuevo.';
+            messagesContainer.appendChild(errorMessage);
+        }
+        
+    } catch (error) {
+        // Remover indicador de escritura en caso de error
+        if (messagesContainer.contains(typingIndicator)) {
+            messagesContainer.removeChild(typingIndicator);
+        }
+        
+        // Mostrar mensaje de error de conexión
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'message bot-message error-message';
+        errorMessage.textContent = 'Error de conexión. Verifica que el servidor esté funcionando.';
+        messagesContainer.appendChild(errorMessage);
+        
+        console.error('Error connecting to API:', error);
+    }
+    
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+</script>
