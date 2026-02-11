@@ -1,0 +1,44 @@
+.selection-tools {
+  width: 320px;
+}
+
+.selection-info {
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.info-row:not(:last-child) {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.info-row strong {
+  color: #1976d2;
+  font-size: 16px;
+}
+
+.selection-actions {
+  margin-top: 12px;
+}
+
+.selection-instructions {
+  padding: 10px;
+  background: #fff3e0;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #666;
+  margin-top: 12px;
+}
+
+.selection-instructions p {
+  margin: 0;
+}

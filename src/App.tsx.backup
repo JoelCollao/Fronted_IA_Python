@@ -1,0 +1,20 @@
+import React from 'react';
+import { MapProvider } from './core/contexts/MapContext';
+import { LayerProvider } from './core/contexts/LayerContext';
+import { SelectionProvider } from './core/contexts/SelectionContext';
+import { MainLayout } from './components/layout/MainLayout';
+import './App.css';
+
+function App() {
+  return (
+    <MapProvider>
+      <LayerProvider>
+        <SelectionProvider>
+          <MainLayout />
+        </SelectionProvider>
+      </LayerProvider>
+    </MapProvider>
+  );
+}
+
+export default App;
