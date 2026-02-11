@@ -65,11 +65,11 @@ export const MapContainer: React.FC<MapContainerProps> = ({ className, style }) 
         setMap(null);
       }
     };
-  }, [setMap, updateMapState, mapState.center, mapState.zoom]);
+  }, [setMap, updateMapState]); // ✅ SOLO estas dos dependencias
 
   return (
-    <div 
-      ref={mapRef} 
+    <div
+      ref={mapRef}
       className={`map-container ${className || ''}`}
       style={{ height: '100%', width: '100%', ...style }}
     />
