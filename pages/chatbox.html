@@ -1,6 +1,6 @@
 <div id="chatbox-container" class="chatbox-container">
     <div class="chatbox-header" onclick="toggleChatbox()">
-        <span class="chatbox-title">Chat AI Assistant</span>
+        <span class="chatbox-title">Chat AI-GIS </span>
         <span class="chatbox-toggle" id="chatbox-toggle">−</span>
     </div>
     <div class="chatbox-content" id="chatbox-content">
@@ -86,8 +86,26 @@ async function sendMessage() {
             // Agregar respuesta del bot
             const botMessage = document.createElement('div');
             botMessage.className = 'message bot-message';
-            botMessage.textContent = data.response || data.message || 'Respuesta recibida del servidor';
+
+            let cleanMessage = '';
+
+            if (typeof data === 'string') {
+                cleanMessage = data;
+            } else if (data.reply) {
+                cleanMessage = data.reply;
+            } else if (data.response) {
+                cleanMessage = data.response;
+            } else if (data.message) {
+                cleanMessage = data.message;
+            } else {
+                cleanMessage = 'Respuesta recibida del servidor';
+            }
+
+            // Limpiar saltos de línea innecesarios
+            cleanMessage = cleanMessage.replace(/\n+/g, ' ').trim();
+            botMessage.textContent = cleanMessage;
             messagesContainer.appendChild(botMessage);
+
         } else {
             // Manejar errores de respuesta
             const errorMessage = document.createElement('div');

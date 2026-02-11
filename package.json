@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "clean": "rm -rf node_modules/.vite && rm -rf dist",
+    "clean:win": "taskkill /f /im node.exe & rmdir /s /q node_modules\\.vite & rmdir /s /q dist",
+    "dev:fresh": "npm run clean:win && npm install && npm run dev",
+    "dev:clean": "npm run clean && npm run dev"
   },
   "dependencies": {
     "react": "^18.2.0",

@@ -1,4 +1,4 @@
-import { BaseApiService } from '@services/api/baseApi';
+import { BaseApiService } from '../api/baseApi.js';
 
 export interface GeoFeature {
   id: string;
@@ -15,54 +15,81 @@ export interface LayerInfo {
   url?: string;
 }
 
+export interface AgentResponse {
+  reply?: string;
+  response?: string;
+  message?: string;
+  error?: string;
+  [key: string]: any;
+}
+
 export class FlaskApiService extends BaseApiService {
+  constructor() {
+    super('http://localhost:5000');
+  }
+
   /**
-   * Obtiene información de capas disponibles
+   * Endpoint para el agente de IA - coincide con el backend
    */
+  async postAgent(data: { message: string }): Promise<AgentResponse> {
+    return this.post<AgentResponse>('/api/agent', data);
+  }
+
+  /**
+   * Obtiene información de ubicaciones GIS - endpoint disponible en backend
+   */
+  async getGISLocations(): Promise<{ locations: any[], count: number }> {
+    return this.get<{ locations: any[], count: number }>('/api/gis/locations');
+  }
+
+  /**
+   * Analiza datos GIS - endpoint disponible en backend
+   */
+  async analyzeGISData(data: any): Promise<{ result: string, data: any }> {
+    return this.post<{ result: string, data: any }>('/api/gis/analyze', data);
+  }
+
+  /**
+   * Verificar estado de salud del backend
+   */
+  async getHealthStatus(): Promise<{ status: string }> {
+    return this.get<{ status: string }>('/api/health');
+  }
+
+  // Métodos placeholder para compatibilidad (estos endpoints no existen en el backend)
   async getLayers(): Promise<LayerInfo[]> {
-    return this.get<LayerInfo[]>('/layers');
+    console.warn('⚠️ Endpoint /layers no implementado en backend');
+    return [];
   }
 
-  /**
-   * Obtiene features geoespaciales
-   */
   async getGeoFeatures(layerId: string): Promise<GeoFeature[]> {
-    return this.get<GeoFeature[]>(`/layers/${layerId}/features`);
+    console.warn('⚠️ Endpoint de features no implementado en backend');
+    return [];
   }
 
-  /**
-   * Busca features por atributos
-   */
   async searchFeatures(query: string): Promise<GeoFeature[]> {
-    return this.get<GeoFeature[]>(`/search?q=${encodeURIComponent(query)}`);
+    console.warn('⚠️ Endpoint de búsqueda no implementado en backend');
+    return [];
   }
 
-  /**
-   * Obtiene estadísticas de una capa
-   */
   async getLayerStats(layerId: string): Promise<any> {
-    return this.get<any>(`/layers/${layerId}/stats`);
+    console.warn('⚠️ Endpoint de estadísticas no implementado en backend');
+    return {};
   }
 
-  /**
-   * Crea una nueva feature
-   */
   async createFeature(layerId: string, feature: Partial<GeoFeature>): Promise<GeoFeature> {
-    return this.post<GeoFeature>(`/layers/${layerId}/features`, feature);
+    console.warn('⚠️ Endpoint de crear feature no implementado en backend');
+    throw new Error('Endpoint no disponible');
   }
 
-  /**
-   * Actualiza una feature existente
-   */
   async updateFeature(layerId: string, featureId: string, feature: Partial<GeoFeature>): Promise<GeoFeature> {
-    return this.put<GeoFeature>(`/layers/${layerId}/features/${featureId}`, feature);
+    console.warn('⚠️ Endpoint de actualizar feature no implementado en backend');
+    throw new Error('Endpoint no disponible');
   }
 
-  /**
-   * Elimina una feature
-   */
   async deleteFeature(layerId: string, featureId: string): Promise<void> {
-    return this.delete<void>(`/layers/${layerId}/features/${featureId}`);
+    console.warn('⚠️ Endpoint de eliminar feature no implementado en backend');
+    throw new Error('Endpoint no disponible');
   }
 }
 

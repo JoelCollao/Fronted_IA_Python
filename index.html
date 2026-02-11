@@ -7,6 +7,7 @@
     <title>GIS Application - React + Leaflet</title>
     <link rel="stylesheet" href="css/chatbox.css">
 </head>
+
 <body>
     <div id="root"></div>
     <div id="chatbox-wrapper"></div>
@@ -18,14 +19,23 @@
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('chatbox-wrapper').innerHTML = html;
+
+                    // Ejecutar scripts inline después de cargar el HTML
+                    const scripts = document.getElementById('chatbox-wrapper').querySelectorAll('script');
+                    scripts.forEach(script => {
+                        const newScript = document.createElement('script');
+                        newScript.innerHTML = script.innerHTML;
+                        document.body.appendChild(newScript);
+                    });
                 })
                 .catch(error => {
                     console.error('Error loading chatbox:', error);
                 });
         }
-        
+
         // Cargar el chatbox cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', loadChatbox);
     </script>
 </body>
+
 </html>

@@ -1,75 +1,68 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { currentEnvironment } from '@core/config/environment';
+export interface ApiResponse<T> {
+  data?: T;
+  error?: string;
+  message?: string;
+}
 
 export class BaseApiService {
-  private axiosInstance: AxiosInstance;
+  protected baseURL: string;
 
-  constructor(baseURL?: string) {
-    this.axiosInstance = axios.create({
-      baseURL: baseURL || currentEnvironment.apiUrl,
-      timeout: 10000,
+  constructor(baseURL: string = 'http://localhost:5000') {
+    this.baseURL = baseURL;
+  }
+
+  protected async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const url = `${this.baseURL}${endpoint}`;
+    
+    const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
+        ...options.headers,
       },
-    });
+      ...options,
+    };
 
-    this.setupInterceptors();
-  }
-
-  private setupInterceptors(): void {
-    // Request interceptor
-    this.axiosInstance.interceptors.request.use(
-      (config) => {
-        console.log(`[API] ${config.method?.toUpperCase()} ${config.url}`);
-        return config;
-      },
-      (error) => {
-        return Promise.reject(error);
+    try {
+      console.log(`🌐 ${options.method || 'GET'} ${url}`);
+      
+      const response = await fetch(url, config);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
-    );
 
-    // Response interceptor
-    this.axiosInstance.interceptors.response.use(
-      (response: AxiosResponse) => {
-        return response;
-      },
-      (error) => {
-        console.error('[API Error]', error);
-        return Promise.reject(this.handleError(error));
-      }
-    );
-  }
-
-  private handleError(error: any): Error {
-    if (error.response) {
-      // Server responded with error status
-      return new Error(`API Error: ${error.response.status} - ${error.response.data?.message || 'Unknown error'}`);
-    } else if (error.request) {
-      // Request made but no response
-      return new Error('Network Error: No response from server');
-    } else {
-      // Something else happened
-      return new Error(`Request Error: ${error.message}`);
+      const data = await response.json();
+      console.log(`✅ Respuesta exitosa de ${url}:`, data);
+      return data;
+    } catch (error) {
+      console.error(`❌ Error en ${url}:`, error);
+      throw error;
     }
   }
 
-  protected async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.axiosInstance.get<T>(url, config);
-    return response.data;
+  protected async get<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, { method: 'GET' });
   }
 
-  protected async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.axiosInstance.post<T>(url, data, config);
-    return response.data;
+  protected async post<T>(endpoint: string, data: any): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   }
 
-  protected async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.axiosInstance.put<T>(url, data, config);
-    return response.data;
+  protected async put<T>(endpoint: string, data: any): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
   }
 
-  protected async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.axiosInstance.delete<T>(url, config);
-    return response.data;
+  protected async delete<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, { method: 'DELETE' });
   }
 }

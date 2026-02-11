@@ -22,7 +22,7 @@ const baseConfig = {
 export const environments: Record<string, Environment> = {
   development: {
     production: false,
-    apiUrl: 'http://localhost:5000/api',
+    apiUrl: 'http://localhost:3000/api',
     geoServerUrl: 'http://localhost:8080/geoserver',
     ...baseConfig
   },
