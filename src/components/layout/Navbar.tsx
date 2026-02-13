@@ -92,7 +92,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Logo y título */}
       <div className="navbar-brand">
         <div className="navbar-logo">🗺️</div>
-        <h1 className="navbar-title">WebGIS Pro</h1>
+        <h1 className="navbar-title">App GIS - DevJoel</h1>
       </div>
 
       {/* Herramientas principales */}

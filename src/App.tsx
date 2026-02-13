@@ -6,8 +6,17 @@ import { Navbar } from './components/layout/Navbar';
 import { LayerPanel } from './modules/LayerPanel/LayerPanel';
 import { MapContainer } from './components/map/MapContainer';
 import { useMap } from './core/contexts/MapContext';
+import { useLayers } from './core/contexts/LayerContext'; // ✅ AGREGAR ESTA LÍNEA
 import L from 'leaflet';
+import 'leaflet-geometryutil';
 import './App.css';
+
+// Declaración de tipos para leaflet-geometryutil
+declare module 'leaflet' {
+  namespace GeometryUtil {
+    function geodesicArea(latlngs: LatLng[]): number;
+  }
+}
 
 export type ActiveTool = 
   | 'none'

@@ -214,7 +214,13 @@ export const LayerPanel: React.FC = () => {
 
         if (geoJsonData.features && geoJsonData.features.length > 0) {
           geoJsonData.features.forEach((feature: any, index: number) => {
-            if (feature.geometry.type === 'Point') {
+            const geometryType = feature.geometry.type;
+            const properties = feature.properties || {};
+            const name = properties.name || `Elemento ${index + 1}`;
+            const description = properties.description || 'Sin descripción';
+
+            // 🔵 PUNTOS
+            if (geometryType === 'Point') {
               const [lng, lat] = feature.geometry.coordinates;
 
               const marker = L.marker([lat, lng], {
@@ -236,14 +242,121 @@ export const LayerPanel: React.FC = () => {
 
               marker.bindPopup(`
               <div style="color: #333;">
-                <h4 style="color: #0066cc;">🔵 Punto ${index + 1}</h4>
+                <h4 style="color: #0066cc;">🔵 ${name}</h4>
+                <p>${description}</p>
                 <p>📄 ${fileName}</p>
-                <small>Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}</small>
+                <small>📍 Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}</small>
+                <br><small>🏷️ Tipo: Punto</small>
               </div>
             `);
 
               marker.addTo(map);
               createdMarkers.push(marker);
+
+            // 🔷 LÍNEAS
+            } else if (geometryType === 'LineString') {
+              const coordinates = feature.geometry.coordinates.map((coord: number[]) => [coord[1], coord[0]]);
+              
+              const polyline = L.polyline(coordinates, {
+                color: '#ff6600',
+                weight: 4,
+                opacity: 0.8,
+                dashArray: '10, 5'
+              });
+
+              polyline.bindPopup(`
+              <div style="color: #333;">
+                <h4 style="color: #ff6600;">🔶 ${name}</h4>
+                <p>${description}</p>
+                <p>📄 ${fileName}</p>
+                <small>📏 Puntos: ${coordinates.length}</small>
+                <br><small>🏷️ Tipo: Línea</small>
+              </div>
+            `);
+
+              polyline.addTo(map);
+              createdMarkers.push(polyline);
+
+            // 🔺 POLÍGONOS
+            } else if (geometryType === 'Polygon') {
+              const coordinates = feature.geometry.coordinates[0].map((coord: number[]) => [coord[1], coord[0]]);
+              
+              const polygon = L.polygon(coordinates, {
+                color: '#28a745',
+                fillColor: '#28a745',
+                weight: 2,
+                opacity: 0.8,
+                fillOpacity: 0.3
+              });
+
+              polygon.bindPopup(`
+              <div style="color: #333;">
+                <h4 style="color: #28a745;">🔺 ${name}</h4>
+                <p>${description}</p>
+                <p>📄 ${fileName}</p>
+                <small>📐 Vértices: ${coordinates.length}</small>
+                <br><small>🏷️ Tipo: Polígono</small>
+              </div>
+            `);
+
+              polygon.addTo(map);
+              createdMarkers.push(polygon);
+
+            // 🔷 MULTILÍNEAS
+            } else if (geometryType === 'MultiLineString') {
+              const multiCoordinates = feature.geometry.coordinates.map((line: number[][]) => 
+                line.map((coord: number[]) => [coord[1], coord[0]])
+              );
+
+              const multiPolyline = L.polyline(multiCoordinates, {
+                color: '#ff6600',
+                weight: 4,
+                opacity: 0.8,
+                dashArray: '10, 5'
+              });
+
+              multiPolyline.bindPopup(`
+              <div style="color: #333;">
+                <h4 style="color: #ff6600;">🔶 ${name}</h4>
+                <p>${description}</p>
+                <p>📄 ${fileName}</p>
+                <small>📏 Líneas: ${multiCoordinates.length}</small>
+                <br><small>🏷️ Tipo: Multi-Línea</small>
+              </div>
+            `);
+
+              multiPolyline.addTo(map);
+              createdMarkers.push(multiPolyline);
+
+            // 🔺 MULTIPOLÍGONOS
+            } else if (geometryType === 'MultiPolygon') {
+              const multiCoordinates = feature.geometry.coordinates.map((polygon: number[][][]) =>
+                polygon[0].map((coord: number[]) => [coord[1], coord[0]])
+              );
+
+              const multiPolygon = L.polygon(multiCoordinates, {
+                color: '#28a745',
+                fillColor: '#28a745',
+                weight: 2,
+                opacity: 0.8,
+                fillOpacity: 0.3
+              });
+
+              multiPolygon.bindPopup(`
+              <div style="color: #333;">
+                <h4 style="color: #28a745;">🔺 ${name}</h4>
+                <p>${description}</p>
+                <p>📄 ${fileName}</p>
+                <small>📐 Polígonos: ${multiCoordinates.length}</small>
+                <br><small>🏷️ Tipo: Multi-Polígono</small>
+              </div>
+            `);
+
+              multiPolygon.addTo(map);
+              createdMarkers.push(multiPolygon);
+
+            } else {
+              console.warn(`⚠️ Tipo de geometría no soportado: ${geometryType}`);
             }
           });
         }
@@ -328,7 +441,7 @@ export const LayerPanel: React.FC = () => {
     }
   };
 
-  // Función para convertir KML a GeoJSON
+  // Función para convertir KML a GeoJSON (mejorada)
   const kmlToGeoJSON = async (kmlDoc: Document): Promise<any> => {
     const placemarks = kmlDoc.getElementsByTagName('Placemark');
     const features = [];
@@ -339,8 +452,9 @@ export const LayerPanel: React.FC = () => {
       const placemark = placemarks[i];
       const nameEl = placemark.getElementsByTagName('name')[0];
       const descriptionEl = placemark.getElementsByTagName('description')[0];
+      
+      // 🔵 PUNTOS
       const pointEl = placemark.getElementsByTagName('Point')[0];
-
       if (pointEl) {
         const coordinatesEl = pointEl.getElementsByTagName('coordinates')[0];
         if (coordinatesEl) {
@@ -364,6 +478,74 @@ export const LayerPanel: React.FC = () => {
                   }
                 });
                 console.log(`✅ Punto ${i + 1}: ${lat}, ${lng} - ${nameEl?.textContent}`);
+              }
+            }
+          }
+        }
+      }
+      
+      // 🔷 LÍNEAS
+      const lineStringEl = placemark.getElementsByTagName('LineString')[0];
+      if (lineStringEl) {
+        const coordinatesEl = lineStringEl.getElementsByTagName('coordinates')[0];
+        if (coordinatesEl) {
+          const coordsText = coordinatesEl.textContent?.trim();
+          if (coordsText) {
+            const coordinates = coordsText.split(' ')
+              .map(coord => coord.split(','))
+              .filter(parts => parts.length >= 2)
+              .map(parts => [parseFloat(parts[0]), parseFloat(parts[1])])
+              .filter(coord => !isNaN(coord[0]) && !isNaN(coord[1]));
+
+            if (coordinates.length > 1) {
+              features.push({
+                type: 'Feature',
+                properties: {
+                  name: nameEl?.textContent || `Línea ${i + 1}`,
+                  description: descriptionEl?.textContent || 'Sin descripción'
+                },
+                geometry: {
+                  type: 'LineString',
+                  coordinates: coordinates
+                }
+              });
+              console.log(`✅ Línea ${i + 1}: ${coordinates.length} puntos - ${nameEl?.textContent}`);
+            }
+          }
+        }
+      }
+
+      // 🔺 POLÍGONOS
+      const polygonEl = placemark.getElementsByTagName('Polygon')[0];
+      if (polygonEl) {
+        const outerBoundaryEl = polygonEl.getElementsByTagName('outerBoundaryIs')[0];
+        if (outerBoundaryEl) {
+          const linearRingEl = outerBoundaryEl.getElementsByTagName('LinearRing')[0];
+          if (linearRingEl) {
+            const coordinatesEl = linearRingEl.getElementsByTagName('coordinates')[0];
+            if (coordinatesEl) {
+              const coordsText = coordinatesEl.textContent?.trim();
+              if (coordsText) {
+                const coordinates = coordsText.split(' ')
+                  .map(coord => coord.split(','))
+                  .filter(parts => parts.length >= 2)
+                  .map(parts => [parseFloat(parts[0]), parseFloat(parts[1])])
+                  .filter(coord => !isNaN(coord[0]) && !isNaN(coord[1]));
+
+                if (coordinates.length > 2) {
+                  features.push({
+                    type: 'Feature',
+                    properties: {
+                      name: nameEl?.textContent || `Polígono ${i + 1}`,
+                      description: descriptionEl?.textContent || 'Sin descripción'
+                    },
+                    geometry: {
+                      type: 'Polygon',
+                      coordinates: [coordinates]
+                    }
+                  });
+                  console.log(`✅ Polígono ${i + 1}: ${coordinates.length} vértices - ${nameEl?.textContent}`);
+                }
               }
             }
           }
@@ -606,14 +788,26 @@ export const LayerPanel: React.FC = () => {
                     <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
                       <span style={{
                         display: 'inline-block',
+                        width: '20px',
+                        height: '4px',
+                        backgroundColor: '#ff6600',
+                        marginRight: '8px',
+                        border: '1px solid white'
+                      }}></span>
+                      <strong>🔶 Líneas:</strong> Líneas naranjas con puntos
+                    </div>
+
+                    <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
+                      <span style={{
+                        display: 'inline-block',
                         width: '16px',
                         height: '16px',
                         backgroundColor: '#28a745',
-                        borderRadius: '20%',
-                        border: '2px solid white',
+                        opacity: 0.6,
+                        border: '2px solid #28a745',
                         marginRight: '8px'
                       }}></span>
-                      <strong>📦 Shapefile (ZIP):</strong> Marcadores verdes cuadrados • Debe incluir .shp, .shx, .dbf
+                      <strong>🔺 Polígonos:</strong> Áreas verdes con borde
                     </div>
                   </div>
                 </div>
