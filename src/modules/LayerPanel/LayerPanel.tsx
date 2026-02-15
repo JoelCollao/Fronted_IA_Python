@@ -3,6 +3,25 @@ import { useLayers } from '../../core/contexts/LayerContext';
 import { useMap } from '../../core/contexts/MapContext';
 import L from 'leaflet';
 
+// ✅ IMPORTACIÓN ALTERNATIVA DE SHPJS
+let shp: any;
+
+// Función para cargar shpjs dinámicamente
+const loadShpJS = async () => {
+  if (!shp) {
+    try {
+      // Método 1: Importación dinámica
+      const shpModule = await import('shpjs');
+      shp = shpModule.default || shpModule;
+      console.log('✅ shpjs cargado dinámicamente:', typeof shp);
+    } catch (error) {
+      console.error('❌ Error cargando shpjs:', error);
+      throw new Error('No se pudo cargar la librería shpjs');
+    }
+  }
+  return shp;
+};
+
 export const LayerPanel: React.FC = () => {
   const { layers, addLayer, removeLayer } = useLayers();
   const { map } = useMap();
@@ -205,6 +224,238 @@ export const LayerPanel: React.FC = () => {
 
         console.log(`🎉 KML cargado: ${fileName} con ${geoJsonData.features.length} elementos`);
 
+      } else if (fileExtension === 'shp' || fileExtension === 'zip') {
+        // 🟩 PROCESAR SHAPEFILE (ZIP)
+        console.log(`📦 Procesando archivo Shapefile/ZIP: ${fileName}`);
+        
+        const geoJsonData = await shapefileToGeoJSON(file);
+
+        if (!geoJsonData.features || geoJsonData.features.length === 0) {
+          throw new Error('No se encontraron elementos válidos en el archivo Shapefile.');
+        }
+
+        console.log(`📊 Shapefile procesado: ${geoJsonData.features.length} elementos encontrados`);
+
+        const createdMarkers: L.Layer[] = [];
+
+        // Procesar cada feature del shapefile
+        geoJsonData.features.forEach((feature: any, index: number) => {
+          const geometryType = feature.geometry.type;
+          const properties = feature.properties || {};
+          const name = properties.name || properties.NAME || properties.title || `Elemento ${index + 1}`;
+          const description = properties.description || properties.DESCRIPTION || properties.info || 'Elemento de Shapefile';
+
+          // 🟢 PUNTOS
+          if (geometryType === 'Point') {
+            const [lng, lat] = feature.geometry.coordinates;
+
+            const marker = L.marker([lat, lng], {
+              icon: L.divIcon({
+                className: `shapefile-marker-${Date.now()}-${index}`,
+                html: `<div style="
+                  background: #28a745; 
+                  width: 22px; 
+                  height: 22px; 
+                  border-radius: 50%; 
+                  border: 3px solid white; 
+                  box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-weight: bold;
+                  font-size: 10px;
+                  color: white;
+                ">${index + 1}</div>`,
+                iconSize: [28, 28],
+                iconAnchor: [14, 14]
+              }),
+              zIndexOffset: 2000 + index
+            });
+
+            marker.bindPopup(`
+              <div style="color: #333;">
+                <h4 style="color: #28a745;">🟢 ${name}</h4>
+                <p>${description}</p>
+                <p>📄 ${fileName}</p>
+                <small>📍 Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}</small>
+                <br><small>🏷️ Tipo: Punto (Shapefile)</small>
+              </div>
+            `);
+
+            marker.addTo(map);
+            createdMarkers.push(marker);
+
+          // 🟠 LÍNEAS
+          } else if (geometryType === 'LineString') {
+            const coordinates = feature.geometry.coordinates.map((coord: number[]) => [coord[1], coord[0]]);
+            
+            const polyline = L.polyline(coordinates, {
+              color: '#fd7e14',
+              weight: 4,
+              opacity: 0.8,
+              dashArray: '8, 4'
+            });
+
+            polyline.bindPopup(`
+              <div style="color: #333;">
+                <h4 style="color: #fd7e14;">🟠 ${name}</h4>
+                <p>${description}</p>
+                <p>📄 ${fileName}</p>
+                <small>📏 Puntos: ${coordinates.length}</small>
+                <br><small>🏷️ Tipo: Línea (Shapefile)</small>
+              </div>
+            `);
+
+            polyline.addTo(map);
+            createdMarkers.push(polyline);
+
+          // 🟣 POLÍGONOS
+          } else if (geometryType === 'Polygon') {
+            const coordinates = feature.geometry.coordinates[0].map((coord: number[]) => [coord[1], coord[0]]);
+            
+            const polygon = L.polygon(coordinates, {
+              color: '#6f42c1',
+              fillColor: '#6f42c1',
+              weight: 2,
+              opacity: 0.8,
+              fillOpacity: 0.4
+            });
+
+            polygon.bindPopup(`
+              <div style="color: #333;">
+                <h4 style="color: #6f42c1;">🟣 ${name}</h4>
+                <p>${description}</p>
+                <p>📄 ${fileName}</p>
+                <small>📐 Vértices: ${coordinates.length}</small>
+                <br><small>🏷️ Tipo: Polígono (Shapefile)</small>
+              </div>
+            `);
+
+            polygon.addTo(map);
+            createdMarkers.push(polygon);
+
+          // 🟠 MULTILÍNEAS
+          } else if (geometryType === 'MultiLineString') {
+            const multiCoordinates = feature.geometry.coordinates.map((line: number[][]) => 
+              line.map((coord: number[]) => [coord[1], coord[0]])
+            );
+
+            const multiPolyline = L.polyline(multiCoordinates, {
+              color: '#fd7e14',
+              weight: 4,
+              opacity: 0.8,
+              dashArray: '8, 4'
+            });
+
+            multiPolyline.bindPopup(`
+              <div style="color: #333;">
+                <h4 style="color: #fd7e14;">🟠 ${name}</h4>
+                <p>${description}</p>
+                <p>📄 ${fileName}</p>
+                <small>📏 Líneas: ${multiCoordinates.length}</small>
+                <br><small>🏷️ Tipo: Multi-Línea (Shapefile)</small>
+              </div>
+            `);
+
+            multiPolyline.addTo(map);
+            createdMarkers.push(multiPolyline);
+
+          // 🟣 MULTIPOLÍGONOS
+          } else if (geometryType === 'MultiPolygon') {
+            const multiCoordinates = feature.geometry.coordinates.map((polygon: number[][][]) =>
+              polygon[0].map((coord: number[]) => [coord[1], coord[0]])
+            );
+
+            const multiPolygon = L.polygon(multiCoordinates, {
+              color: '#6f42c1',
+              fillColor: '#6f42c1',
+              weight: 2,
+              opacity: 0.8,
+              fillOpacity: 0.4
+            });
+
+            multiPolygon.bindPopup(`
+              <div style="color: #333;">
+                <h4 style="color: #6f42c1;">🟣 ${name}</h4>
+                <p>${description}</p>
+                <p>📄 ${fileName}</p>
+                <small>📐 Polígonos: ${multiCoordinates.length}</small>
+                <br><small>🏷️ Tipo: Multi-Polígono (Shapefile)</small>
+              </div>
+            `);
+
+            multiPolygon.addTo(map);
+            createdMarkers.push(multiPolygon);
+
+          } else {
+            console.warn(`⚠️ Tipo de geometría no soportado en Shapefile: ${geometryType}`);
+          }
+        });
+
+        // Calcular bounds para centrar el mapa
+        let bounds: L.LatLngBounds | null = null;
+        geoJsonData.features.forEach((feature: any) => {
+          if (feature.geometry.type === 'Point') {
+            const [lng, lat] = feature.geometry.coordinates;
+            if (!bounds) {
+              bounds = L.latLngBounds([lat, lng], [lat, lng]);
+            } else {
+              bounds.extend([lat, lng]);
+            }
+          } else if (feature.geometry.type === 'LineString') {
+            feature.geometry.coordinates.forEach((coord: number[]) => {
+              const [lng, lat] = coord;
+              if (!bounds) {
+                bounds = L.latLngBounds([lat, lng], [lat, lng]);
+              } else {
+                bounds.extend([lat, lng]);
+              }
+            });
+          } else if (feature.geometry.type === 'Polygon') {
+            feature.geometry.coordinates[0].forEach((coord: number[]) => {
+              const [lng, lat] = coord;
+              if (!bounds) {
+                bounds = L.latLngBounds([lat, lng], [lat, lng]);
+              } else {
+                bounds.extend([lat, lng]);
+              }
+            });
+          }
+        });
+
+        // Centrar el mapa en los elementos
+        if (bounds) {
+          setTimeout(() => {
+            console.log('🎯 Centrando en Shapefile bounds:', bounds);
+            map.fitBounds(bounds!, {
+              padding: [40, 40],
+              maxZoom: 16,
+              animate: true,
+              duration: 1.2
+            });
+          }, 400);
+        }
+
+        const layerGroup = L.layerGroup(createdMarkers);
+
+        const newLayer = {
+          id: `shapefile_${Date.now()}`,
+          name: fileName,
+          type: 'geojson' as const,
+          visible: true,
+          opacity: 1,
+          data: geoJsonData,
+          leafletLayer: layerGroup,
+          markers: createdMarkers,
+          style: { color: '#28a745', weight: 2, opacity: 1, fillOpacity: 0.6 }
+        };
+
+        addLayer(newLayer);
+        setShowUploader(false);
+        setError(null);
+
+        console.log(`🎉 Shapefile cargado: ${fileName} con ${geoJsonData.features.length} elementos`);
+
       } else if (fileExtension === 'geojson' || fileExtension === 'json') {
         // Manejo similar para GeoJSON...
         const text = await file.text();
@@ -380,7 +631,7 @@ export const LayerPanel: React.FC = () => {
         setError(null);
 
       } else {
-        throw new Error('Formato no soportado. Use KML, GeoJSON o JSON.');
+        throw new Error('Formato no soportado. Use KML, GeoJSON, JSON o Shapefile (ZIP).');
       }
 
     } catch (err) {
@@ -389,6 +640,69 @@ export const LayerPanel: React.FC = () => {
     } finally {
       setLoading(false);
       e.target.value = '';
+    }
+  };
+
+  // 🟩 FUNCIÓN PARA PROCESAR SHAPEFILES (VERSIÓN CON CARGA DINÁMICA)
+  const shapefileToGeoJSON = async (file: File): Promise<any> => {
+    try {
+      // Cargar shpjs dinámicamente
+      const shpLib = await loadShpJS();
+      
+      // Para archivos ZIP que contienen shapefiles
+      if (file.name.toLowerCase().endsWith('.zip')) {
+        console.log('📦 Procesando archivo ZIP con Shapefile...');
+        
+        // Convertir el archivo a ArrayBuffer
+        const arrayBuffer = await file.arrayBuffer();
+        
+        try {
+          console.log('🔄 Iniciando conversión con shpjs...');
+          const geoJson = await shpLib(arrayBuffer);
+          console.log('✅ Shapefile convertido exitosamente:', geoJson);
+          
+          // Verificar que el resultado sea válido
+          if (!geoJson || !geoJson.features) {
+            throw new Error('El archivo no produjo datos GeoJSON válidos');
+          }
+          
+          return geoJson;
+        } catch (shpError) {
+          console.error('❌ Error en shpjs:', shpError);
+          throw new Error(`Error convirtiendo Shapefile: ${shpError instanceof Error ? shpError.message : 'Error desconocido'}`);
+        }
+        
+      } else if (file.name.toLowerCase().endsWith('.shp')) {
+        // Para archivos .shp individuales
+        console.log('📄 Procesando archivo SHP individual...');
+        
+        const arrayBuffer = await file.arrayBuffer();
+        
+        try {
+          const geoJson = await shpLib(arrayBuffer);
+          console.log('✅ Archivo SHP convertido exitosamente:', geoJson);
+          
+          if (!geoJson || !geoJson.features) {
+            throw new Error('El archivo SHP no produjo datos GeoJSON válidos');
+          }
+          
+          return geoJson;
+        } catch (shpError) {
+          console.error('❌ Error en shpjs (SHP):', shpError);
+          throw new Error(`Error convirtiendo archivo SHP: ${shpError instanceof Error ? shpError.message : 'Error desconocido'}`);
+        }
+      }
+      
+      throw new Error('Formato de Shapefile no reconocido. Use archivos .zip o .shp');
+      
+    } catch (error) {
+      console.error('❌ Error general procesando Shapefile:', error);
+      
+      if (error instanceof Error && error.message.includes('shpjs')) {
+        throw new Error('Error con la librería shpjs. Verifica que esté instalada correctamente: npm install shpjs @types/shpjs');
+      }
+      
+      throw new Error(`Error procesando Shapefile: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   };
 
@@ -657,7 +971,7 @@ export const LayerPanel: React.FC = () => {
                     marginBottom: '6px',
                     fontSize: '14px'
                   }}>
-                    {layer.name.includes('.kml') ? '🔴' : '🔵'} {layer.name}
+                    {layer.name.includes('.kml') ? '🔴' : layer.name.includes('.shp') || layer.name.includes('.zip') ? '🟢' : '🔵'} {layer.name}
                   </div>
                   <div style={{
                     fontSize: '12px',
@@ -789,6 +1103,20 @@ export const LayerPanel: React.FC = () => {
                       <span style={{
                         display: 'inline-block',
                         width: '20px',
+                        height: '20px',
+                        backgroundColor: '#28a745',
+                        borderRadius: '50%',
+                        border: '2px solid white',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                        marginRight: '8px'
+                      }}></span>
+                      <strong>🟢 Shapefile (ZIP):</strong> Marcadores verdes • Archivos SHP comprimidos
+                    </div>
+
+                    <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
+                      <span style={{
+                        display: 'inline-block',
+                        width: '20px',
                         height: '4px',
                         backgroundColor: '#ff6600',
                         marginRight: '8px',
@@ -824,7 +1152,7 @@ export const LayerPanel: React.FC = () => {
                   <div style={{ fontSize: '36px', marginBottom: '10px' }}>📂</div>
                   <input
                     type="file"
-                    accept=".kml,.geojson,.json,.zip"
+                    accept=".kml,.geojson,.json,.shp,.zip"
                     onChange={handleFileUpload}
                     disabled={loading}
                     style={{
@@ -861,8 +1189,9 @@ export const LayerPanel: React.FC = () => {
                   <strong>💡 Consejos:</strong><br />
                   • Los archivos se centrarán automáticamente en el mapa<br />
                   • Haz clic en los marcadores para ver información detallada<br />
-                  • Usa los botones 🎯 🗑️ en cada capa para managment<br />
-                  • Los shapefiles deben estar comprimidos en ZIP
+                  • Usa los botones 🎯 🗑️ en cada capa para management<br />
+                  • Los shapefiles deben estar comprimidos en ZIP con todos los archivos (.shp, .shx, .dbf, .prj)<br />
+                  • Formatos soportados: KML, GeoJSON, JSON, SHP (ZIP)
                 </div>
 
                 {/* Error display mejorado */}

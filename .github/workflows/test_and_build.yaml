@@ -1,0 +1,14 @@
+name: AplicacionGIS
+
+on:
+    push:
+        branches: ["main"]
+
+jobs:
+    gis:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: 'hello GIS'
+              run: echo "hello gis"
+            - run: npm run lint
