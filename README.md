@@ -146,6 +146,14 @@ npm run build
 
 # Preview del build
 npm run preview
+
+## LINT
+
+npm run lint          # Linting sin warnings ✅
+npm run lint:dev      # Linting desarrollo (permisivo)
+npm run lint:strict   # Linting estricto (CI/CD)
+npm run build:dev     # Build desarrollo (sin tipos estrictos)
+npm run build:strict  # Build con chequeo completo de tipos
 ```
 
 Los archivos de producción se generan en `dist/`
