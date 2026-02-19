@@ -5,6 +5,7 @@ export interface LayerInfo {
   name: string;
   visible: boolean;
   type: 'vector' | 'wms' | 'base';
+  geometryType?: 'Point' | 'LineString' | 'Polygon' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon'; // NUEVO
 }
 
 interface LayerControlProps {

@@ -1,7 +1,7 @@
-<div id="chatbox-container" class="chatbox-container">
+﻿<div id="chatbox-container" class="chatbox-container">
     <div class="chatbox-header" onclick="toggleChatbox()">
         <span class="chatbox-title">Chat AI-GIS </span>
-        <span class="chatbox-toggle" id="chatbox-toggle">−</span>
+        <span class="chatbox-toggle" id="chatbox-toggle"></span>
     </div>
     <div class="chatbox-content" id="chatbox-content">
         <div class="chatbox-messages" id="chatbox-messages">
@@ -30,7 +30,7 @@ function toggleChatbox() {
         toggle.textContent = '+';
     } else {
         content.style.display = 'flex';
-        toggle.textContent = '−';
+        toggle.textContent = '';
     }
 }
 
@@ -39,6 +39,21 @@ function handleChatboxEnter(event) {
         sendMessage();
     }
 }
+
+// Nueva función para obtener datos de capas del contexto global
+function getLayersData() {
+    // Esta función obtiene los datos de capas que ChatBridge actualiza
+    if (window.layersAnalysisData) {
+        return window.layersAnalysisData;
+    }
+    return {
+        totalLayers: 0,
+        polygonLayers: 0,
+        lineLayers: 0,
+        pointLayers: 0
+    };
+}
+
 
 async function sendMessage() {
     const input = document.getElementById('chatbox-input');
@@ -61,19 +76,24 @@ async function sendMessage() {
     // Mostrar indicador de escritura
     const typingIndicator = document.createElement('div');
     typingIndicator.className = 'message bot-message typing-indicator';
-    typingIndicator.innerHTML = '<span class="typing-dots">●●●</span> Escribiendo...';
+    typingIndicator.innerHTML = '<span class="typing-dots"></span> Escribiendo...';
     messagesContainer.appendChild(typingIndicator);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
     try {
-        // Llamar al endpoint del backend
-        const response = await fetch('http://localhost:5000/api/agent', {
+        // Obtener datos de capas actuales
+        const layersData = getLayersData();
+        console.log(' Enviando datos de capas:', layersData);
+        
+        // Llamar al endpoint del backend CON DATOS DE CAPAS
+        const response = await fetch('http://localhost:5000/api/v1/agent', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                message: userMessageText
+                message: userMessageText,
+                layersData: layersData  // NUEVO: Enviar datos de capas
             })
         });
         

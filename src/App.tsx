@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { MapProvider } from './core/contexts/MapContext';
 import { LayerProvider } from './core/contexts/LayerContext';
 import { SelectionProvider } from './core/contexts/SelectionContext';
@@ -6,12 +6,13 @@ import { Navbar } from './components/layout/Navbar';
 import { LayerPanel } from './modules/LayerPanel/LayerPanel';
 import { MapContainer } from './components/map/MapContainer';
 import { useMap } from './core/contexts/MapContext';
-import { useLayers } from './core/contexts/LayerContext'; // ✅ AGREGAR ESTA LÍNEA
+import { useLayers } from './core/contexts/LayerContext'; // âœ… AGREGAR ESTA LÃNEA
+import { ChatBridge } from './components/chat/ChatBridge';
 import L from 'leaflet';
 import 'leaflet-geometryutil';
 import './App.css';
 
-// Declaración de tipos para leaflet-geometryutil
+// DeclaraciÃ³n de tipos para leaflet-geometryutil
 declare module 'leaflet' {
   namespace GeometryUtil {
     function geodesicArea(latlngs: LatLng[]): number;
@@ -27,7 +28,7 @@ export type ActiveTool =
   | 'bookmarks'
   | 'search';
 
-// Herramientas de medición funcionales
+// Herramientas de mediciÃ³n funcionales
 const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }) => {
   const { map } = useMap();
   const [mode, setMode] = useState('');
@@ -69,7 +70,7 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
       markersRef.current.push(marker);
 
       if (currentPathRef.current.length > 1) {
-        // Crear línea
+        // Crear lÃ­nea
         const polyline = L.polyline(currentPathRef.current, {
           color: 'red',
           weight: 3
@@ -91,7 +92,7 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
     };
 
     const onDoubleClick = () => {
-      setResult(`Medición finalizada: ${result.split(':')[1] || 'N/A'}`);
+      setResult(`MediciÃ³n finalizada: ${result.split(':')[1] || 'N/A'}`);
       setIsActive(false);
       map.off('click', onMapClick);
       map.off('dblclick', onDoubleClick);
@@ -104,8 +105,8 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
   const handleMeasureArea = () => {
     if (!map) return;
     clearMeasurements();
-    setMode('área');
-    setResult('Haz clic en el mapa para delimitar un área...');
+    setMode('Ã¡rea');
+    setResult('Haz clic en el mapa para delimitar un Ã¡rea...');
     setIsActive(true);
 
     const onMapClick = (e: L.LeafletMouseEvent) => {
@@ -117,7 +118,7 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
       markersRef.current.push(marker);
 
       if (currentPathRef.current.length > 2) {
-        // Crear polígono temporal
+        // Crear polÃ­gono temporal
         polygonsRef.current.forEach(p => map.removeLayer(p));
         polygonsRef.current = [];
 
@@ -128,19 +129,19 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
         }).addTo(map);
         polygonsRef.current.push(polygon);
 
-        // Calcular área
+        // Calcular Ã¡rea
         const area = L.GeometryUtil.geodesicArea(currentPathRef.current);
         const areaText = area > 10000 
-          ? `${(area / 10000).toFixed(2)} hectáreas`
-          : `${area.toFixed(2)} m²`;
+          ? `${(area / 10000).toFixed(2)} hectÃ¡reas`
+          : `${area.toFixed(2)} mÂ²`;
         
-        setResult(`Área: ${areaText}. Doble clic para terminar.`);
+        setResult(`Ãrea: ${areaText}. Doble clic para terminar.`);
       }
     };
 
     const onDoubleClick = () => {
       if (currentPathRef.current.length > 2) {
-        // Crear polígono final
+        // Crear polÃ­gono final
         polygonsRef.current.forEach(p => map.removeLayer(p));
         const finalPolygon = L.polygon(currentPathRef.current, {
           color: 'blue',
@@ -151,10 +152,10 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
         
         const area = L.GeometryUtil.geodesicArea(currentPathRef.current);
         const areaText = area > 10000 
-          ? `${(area / 10000).toFixed(2)} hectáreas`
-          : `${area.toFixed(2)} m²`;
+          ? `${(area / 10000).toFixed(2)} hectÃ¡reas`
+          : `${area.toFixed(2)} mÂ²`;
         
-        setResult(`Medición finalizada - Área: ${areaText}`);
+        setResult(`MediciÃ³n finalizada - Ãrea: ${areaText}`);
       }
       setIsActive(false);
       map.off('click', onMapClick);
@@ -189,7 +190,7 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
       color: '#333'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h4 style={{ margin: 0, color: '#333' }}>📏 Herramientas de Medición</h4>
+        <h4 style={{ margin: 0, color: '#333' }}>ðŸ“ Herramientas de MediciÃ³n</h4>
         <button onClick={() => {
           clearMeasurements();
           onClose();
@@ -199,7 +200,7 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
           cursor: 'pointer', 
           fontSize: '18px',
           color: '#666'
-        }}>×</button>
+        }}>Ã—</button>
       </div>
       
       <div style={{ marginBottom: '15px' }}>
@@ -217,23 +218,23 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
             opacity: (isActive && mode !== 'distancia') ? 0.5 : 1
           }}
         >
-          📐 Medir Distancia
+          ðŸ“ Medir Distancia
         </button>
         <button 
           onClick={handleMeasureArea}
-          disabled={isActive && mode !== 'área'}
+          disabled={isActive && mode !== 'Ã¡rea'}
           style={{ 
             margin: '5px', 
             padding: '10px 15px', 
             border: '1px solid #007cba', 
             borderRadius: '4px', 
             cursor: 'pointer',
-            backgroundColor: (isActive && mode === 'área') ? '#007cba' : 'white',
-            color: (isActive && mode === 'área') ? 'white' : '#007cba',
-            opacity: (isActive && mode !== 'área') ? 0.5 : 1
+            backgroundColor: (isActive && mode === 'Ã¡rea') ? '#007cba' : 'white',
+            color: (isActive && mode === 'Ã¡rea') ? 'white' : '#007cba',
+            opacity: (isActive && mode !== 'Ã¡rea') ? 0.5 : 1
           }}
         >
-          📐 Medir Área
+          ðŸ“ Medir Ãrea
         </button>
         <button 
           onClick={clearMeasurements}
@@ -247,7 +248,7 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
             color: '#dc3545'
           }}
         >
-          🗑️ Limpiar
+          ðŸ—‘ï¸ Limpiar
         </button>
       </div>
       
@@ -267,7 +268,7 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
   );
 };
 
-// Herramientas de selección FUNCIONALES
+// Herramientas de selecciÃ³n FUNCIONALES
 const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) => {
   const { map } = useMap();
   const { layers } = useLayers();
@@ -307,7 +308,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
               const [lng, lat] = feature.geometry.coordinates;
               const distance = e.latlng.distanceTo([lat, lng]);
               
-              // Si está cerca del clic (dentro de 100 metros)
+              // Si estÃ¡ cerca del clic (dentro de 100 metros)
               if (distance < 100) {
                 clickedFeatures.push({
                   ...feature,
@@ -321,7 +322,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
       });
 
       if (clickedFeatures.length > 0) {
-        // Agregar marcador de selección
+        // Agregar marcador de selecciÃ³n
         const selectionMarker = L.circleMarker(e.latlng, {
           radius: 8,
           fillColor: '#ffff00',
@@ -331,7 +332,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
           fillOpacity: 0.7
         }).bindPopup(`
           <div style="color: #333;">
-            <h4 style="color: #ff8800;">🎯 Elementos Seleccionados</h4>
+            <h4 style="color: #ff8800;">ðŸŽ¯ Elementos Seleccionados</h4>
             ${clickedFeatures.map(f => `
               <div style="margin: 5px 0; padding: 5px; background: #f9f9f9; border-radius: 3px;">
                 <strong>${f.properties.name || 'Sin nombre'}</strong><br/>
@@ -367,7 +368,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
     setMode('rectangular');
     setIsActive(true);
 
-    // Crear capa para selección rectangular
+    // Crear capa para selecciÃ³n rectangular
     selectionLayerRef.current = L.layerGroup().addTo(map);
     
     let startPoint: L.LatLng | null = null;
@@ -400,7 +401,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
       const bounds = L.latLngBounds(startPoint, e.latlng);
       const selectedFeatures: any[] = [];
       
-      // Buscar features dentro del rectángulo
+      // Buscar features dentro del rectÃ¡ngulo
       layers.forEach(layer => {
         if (layer.data?.features) {
           layer.data.features.forEach((feature: any) => {
@@ -427,14 +428,14 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
         .setLatLng(bounds.getCenter())
         .setContent(`
           <div style="color: #333;">
-            <h4 style="color: #ff8800;">🎯 Selección Rectangular</h4>
+            <h4 style="color: #ff8800;">ðŸŽ¯ SelecciÃ³n Rectangular</h4>
             <p><strong>${selectedFeatures.length} elementos seleccionados</strong></p>
             ${selectedFeatures.slice(0, 3).map(f => `
               <div style="margin: 3px 0; font-size: 12px;">
-                • ${f.properties.name || 'Sin nombre'} (${f.layerName})
+                â€¢ ${f.properties.name || 'Sin nombre'} (${f.layerName})
               </div>
             `).join('')}
-            ${selectedFeatures.length > 3 ? '<div style="font-size: 12px; color: #666;">... y más</div>' : ''}
+            ${selectedFeatures.length > 3 ? '<div style="font-size: 12px; color: #666;">... y mÃ¡s</div>' : ''}
           </div>
         `)
         .openOn(map);
@@ -466,7 +467,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
       color: '#ecf011'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h4 style={{ margin: 0, color: '#333' }}>🎯 Herramientas de Selección</h4>
+        <h4 style={{ margin: 0, color: '#333' }}>ðŸŽ¯ Herramientas de SelecciÃ³n</h4>
         <button onClick={() => {
           clearSelections();
           onClose();
@@ -476,7 +477,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
           cursor: 'pointer', 
           fontSize: '18px',
           color: '#666'
-        }}>×</button>
+        }}>Ã—</button>
       </div>
       
       <div style={{ marginBottom: '15px' }}>
@@ -494,7 +495,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
             opacity: (isActive && mode !== 'clic') ? 0.5 : 1
           }}
         >
-          👆 Seleccionar por Clic
+          ðŸ‘† Seleccionar por Clic
         </button>
         <button 
           onClick={handleRectSelection}
@@ -510,7 +511,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
             opacity: (isActive && mode !== 'rectangular') ? 0.5 : 1
           }}
         >
-          ⬜ Selección Rectangular
+          â¬œ SelecciÃ³n Rectangular
         </button>
         <button 
           onClick={clearSelections}
@@ -524,7 +525,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
             color: '#dc3545'
           }}
         >
-          🗑️ Limpiar Selección
+          ðŸ—‘ï¸ Limpiar SelecciÃ³n
         </button>
       </div>
       
@@ -537,8 +538,8 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
           fontSize: '14px',
           border: '1px solid #ffeaa7'
         }}>
-          <strong>✅ Seleccionados:</strong> {selectedFeatures.length} elementos<br/>
-          {isActive && <small>🔄 Modo activo: {mode}</small>}
+          <strong>âœ… Seleccionados:</strong> {selectedFeatures.length} elementos<br/>
+          {isActive && <small>ðŸ”„ Modo activo: {mode}</small>}
         </div>
       )}
     </div>
@@ -573,7 +574,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
 
     setBookmarks(prev => [...prev, newBookmark]);
     
-    // Mostrar confirmación temporal
+    // Mostrar confirmaciÃ³n temporal
     const popup = L.popup({
       closeButton: false,
       autoClose: true,
@@ -582,7 +583,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
     .setLatLng(center)
     .setContent(`
       <div style="color: #333; text-align: center;">
-        <strong>✅ Vista guardada</strong><br/>
+        <strong>âœ… Vista guardada</strong><br/>
         <small>${timestamp}</small>
       </div>
     `)
@@ -611,7 +612,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
       .setLatLng(bookmark.center)
       .setContent(`
         <div style="color: #333; text-align: center;">
-          <strong>📌 ${bookmark.name}</strong><br/>
+          <strong>ðŸ“Œ ${bookmark.name}</strong><br/>
           <small>Guardado: ${bookmark.timestamp}</small>
         </div>
       `)
@@ -620,7 +621,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
   };
 
   const deleteBookmark = (id: string) => {
-    if (window.confirm('¿Eliminar esta vista guardada?')) {
+    if (window.confirm('Â¿Eliminar esta vista guardada?')) {
       setBookmarks(prev => prev.filter(b => b.id !== id));
     }
   };
@@ -653,14 +654,14 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
       overflowY: 'auto'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h4 style={{ margin: 0, color: '#333' }}>📌 Vistas Guardadas</h4>
+        <h4 style={{ margin: 0, color: '#333' }}>ðŸ“Œ Vistas Guardadas</h4>
         <button onClick={onClose} style={{ 
           background: 'none', 
           border: 'none', 
           cursor: 'pointer', 
           fontSize: '18px',
           color: '#666'
-        }}>×</button>
+        }}>Ã—</button>
       </div>
       
       <div style={{ marginBottom: '15px' }}>
@@ -678,7 +679,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
             fontWeight: 'bold'
           }}
         >
-          💾 Guardar Vista Actual
+          ðŸ’¾ Guardar Vista Actual
         </button>
       </div>
       
@@ -692,9 +693,9 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
             backgroundColor: '#f8f9fa',
             borderRadius: '4px'
           }}>
-            <div style={{ fontSize: '24px', marginBottom: '8px' }}>📍</div>
+            <div style={{ fontSize: '24px', marginBottom: '8px' }}>ðŸ“</div>
             <p>No hay vistas guardadas</p>
-            <small>Navega a una ubicación y guarda tu primera vista</small>
+            <small>Navega a una ubicaciÃ³n y guarda tu primera vista</small>
           </div>
         ) : (
           bookmarks.map((bookmark, index) => (
@@ -713,15 +714,15 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
               }}
               onClick={() => goToBookmark(bookmark)}
               >
-                📌 {bookmark.name}
+                ðŸ“Œ {bookmark.name}
               </div>
               <div style={{ 
                 fontSize: '11px', 
                 color: '#666',
                 marginBottom: '8px'
               }}>
-                📅 {bookmark.timestamp}<br/>
-                🗺️ Zoom: {bookmark.zoom.toFixed(1)} • Lat: {bookmark.center[0].toFixed(4)} • Lng: {bookmark.center[1].toFixed(4)}
+                ðŸ“… {bookmark.timestamp}<br/>
+                ðŸ—ºï¸ Zoom: {bookmark.zoom.toFixed(1)} â€¢ Lat: {bookmark.center[0].toFixed(4)} â€¢ Lng: {bookmark.center[1].toFixed(4)}
               </div>
               <div style={{ display: 'flex', gap: '4px' }}>
                 <button 
@@ -736,7 +737,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
                     color: 'white'
                   }}
                 >
-                  🎯 Ir
+                  ðŸŽ¯ Ir
                 </button>
                 <button 
                   onClick={() => renameBookmark(bookmark.id)}
@@ -750,7 +751,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
                     color: 'white'
                   }}
                 >
-                  ✏️
+                  âœï¸
                 </button>
                 <button 
                   onClick={() => deleteBookmark(bookmark.id)}
@@ -764,7 +765,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
                     color: 'white'
                   }}
                 >
-                  🗑️
+                  ðŸ—‘ï¸
                 </button>
               </div>
             </div>
@@ -775,7 +776,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
   );
 };
 
-// Búsqueda funcional
+// BÃºsqueda funcional
 const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => {
   const { map } = useMap();
   const [searchTerm, setSearchTerm] = useState('');
@@ -799,12 +800,12 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
         const num1 = parseFloat(match[1]);
         const num2 = parseFloat(match[2]);
         
-        // Determinar si es lat,lng o lng,lat basado en rangos típicos
+        // Determinar si es lat,lng o lng,lat basado en rangos tÃ­picos
         if (Math.abs(num1) <= 90 && Math.abs(num2) <= 180) {
-          // Primer número parece latitud
+          // Primer nÃºmero parece latitud
           return [num1, num2];
         } else if (Math.abs(num2) <= 90 && Math.abs(num1) <= 180) {
-          // Segundo número parece latitud
+          // Segundo nÃºmero parece latitud
           return [num2, num1];
         }
       }
@@ -844,7 +845,7 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
         searchMarkerRef.current = L.marker([lat, lng], { icon: searchIcon })
           .bindPopup(`
             <div style="color: #333;">
-              <h4 style="margin: 0 0 8px 0;">📍 Coordenadas encontradas</h4>
+              <h4 style="margin: 0 0 8px 0;">ðŸ“ Coordenadas encontradas</h4>
               <p style="margin: 0;"><strong>Latitud:</strong> ${lat.toFixed(6)}</p>
               <p style="margin: 0;"><strong>Longitud:</strong> ${lng.toFixed(6)}</p>
             </div>
@@ -855,7 +856,7 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
         map.setView([lat, lng], 16);
         searchMarkerRef.current.openPopup();
         
-        setResults([`✅ Coordenadas: ${lat.toFixed(6)}, ${lng.toFixed(6)}`]);
+        setResults([`âœ… Coordenadas: ${lat.toFixed(6)}, ${lng.toFixed(6)}`]);
       } else {
         // Buscar como nombre de lugar usando Nominatim
         const response = await fetch(
@@ -889,7 +890,7 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
             searchMarkerRef.current = L.marker([lat, lng], { icon: searchIcon })
               .bindPopup(`
                 <div style="color: #333;">
-                  <h4 style="margin: 0 0 8px 0;">🔍 ${firstResult.display_name}</h4>
+                  <h4 style="margin: 0 0 8px 0;">ðŸ” ${firstResult.display_name}</h4>
                   <p style="margin: 0; font-size: 12px;"><strong>Coordenadas:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}</p>
                 </div>
               `)
@@ -899,15 +900,15 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
             searchMarkerRef.current.openPopup();
             
           } else {
-            setResults(['❌ No se encontraron resultados']);
+            setResults(['âŒ No se encontraron resultados']);
           }
         } else {
-          throw new Error('Error en la búsqueda');
+          throw new Error('Error en la bÃºsqueda');
         }
       }
     } catch (error) {
-      console.error('Error en búsqueda:', error);
-      setResults(['❌ Error en la búsqueda. Verifique su conexión.']);
+      console.error('Error en bÃºsqueda:', error);
+      setResults(['âŒ Error en la bÃºsqueda. Verifique su conexiÃ³n.']);
     } finally {
       setLoading(false);
     }
@@ -943,7 +944,7 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
       color: '#333'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h4 style={{ margin: 0, color: '#333' }}>🔍 Búsqueda Geográfica</h4>
+        <h4 style={{ margin: 0, color: '#333' }}>ðŸ” BÃºsqueda GeogrÃ¡fica</h4>
         <button onClick={() => {
           if (searchMarkerRef.current && map) {
             map.removeLayer(searchMarkerRef.current);
@@ -956,7 +957,7 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
           cursor: 'pointer', 
           fontSize: '18px',
           color: '#666'
-        }}>×</button>
+        }}>Ã—</button>
       </div>
       
       <div style={{ marginBottom: '15px' }}>
@@ -990,7 +991,7 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
             opacity: loading || !searchTerm.trim() ? 0.6 : 1
           }}
         >
-          {loading ? '🔄 Buscando...' : '🔍 Buscar'}
+          {loading ? 'ðŸ”„ Buscando...' : 'ðŸ” Buscar'}
         </button>
       </div>
       
@@ -1006,9 +1007,9 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
                 border: '1px solid #e0e0e0',
                 borderRadius: '4px',
                 marginBottom: '5px',
-                cursor: result.startsWith('✅') ? 'pointer' : result.startsWith('❌') ? 'default' : 'pointer',
+                cursor: result.startsWith('âœ…') ? 'pointer' : result.startsWith('âŒ') ? 'default' : 'pointer',
                 color: '#333',
-                backgroundColor: result.startsWith('❌') ? '#f8d7da' : '#f8f9fa',
+                backgroundColor: result.startsWith('âŒ') ? '#f8d7da' : '#f8f9fa',
                 fontSize: '13px'
               }}
             >
@@ -1026,10 +1027,10 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
         fontSize: '12px',
         color: '#333'
       }}>
-        <strong>💡 Ejemplos de búsqueda:</strong><br/>
-        • <strong>Coordenadas:</strong> -12.0464, -77.0428<br/>
-        • <strong>Lugares:</strong> Plaza de Armas Lima<br/>
-        • <strong>Direcciones:</strong> Av. Larco Miraflores
+        <strong>ðŸ’¡ Ejemplos de bÃºsqueda:</strong><br/>
+        â€¢ <strong>Coordenadas:</strong> -12.0464, -77.0428<br/>
+        â€¢ <strong>Lugares:</strong> Plaza de Armas Lima<br/>
+        â€¢ <strong>Direcciones:</strong> Av. Larco Miraflores
       </div>
     </div>
   );
@@ -1058,19 +1059,19 @@ const SimpleAttributeTable: React.FC<{onClose: () => void}> = ({ onClose }) => (
       alignItems: 'center',
       background: '#f5f5f5'
     }}>
-      <h4 style={{ margin: 0, color: '#333' }}>📊 Tabla de Atributos</h4>
+      <h4 style={{ margin: 0, color: '#333' }}>ðŸ“Š Tabla de Atributos</h4>
       <button onClick={onClose} style={{ 
         background: 'none', 
         border: 'none', 
         cursor: 'pointer', 
         fontSize: '18px',
         color: '#666'
-      }}>×</button>
+      }}>Ã—</button>
     </div>
     <div style={{ flex: 1, padding: '15px', color: '#333' }}>
       <p style={{ color: '#666' }}>No hay capas seleccionadas para mostrar atributos.</p>
       <p style={{ color: '#666', fontSize: '14px' }}>
-        Agrega una capa y selecciona elementos para ver sus atributos aquí.
+        Agrega una capa y selecciona elementos para ver sus atributos aquÃ­.
       </p>
     </div>
   </div>
@@ -1119,7 +1120,7 @@ const MainLayout: React.FC = () => {
         }}>
           <MapContainer />
           
-          {/* Herramientas flotantes según tool activo */}
+          {/* Herramientas flotantes segÃºn tool activo */}
           {activeTool === 'measurement' && (
             <FunctionalMeasurementTools onClose={() => setActiveTool('none')} />
           )}
@@ -1151,6 +1152,7 @@ function App() {
     <MapProvider>
       <LayerProvider>
         <SelectionProvider>
+                    <ChatBridge />
           <MainLayout />
         </SelectionProvider>
       </LayerProvider>

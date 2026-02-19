@@ -180,3 +180,24 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE.md](LICENSE.m
 - OpenStreetMap contributors
 - GeoServer project
 - Tailwind CSS team
+
+# Consultas espaciales de panel de control
+ Consultas Soportadas
+"¿Cuántas capas de polígono hay en el mapa?"
+"¿Cuántas capas de línea existen?"
+"¿Hay capas de punto cargadas?"
+"¿Cuántas capas hay en total?"
+
+1. Usuario carga capas desde GeoServer
+   ↓
+2. LayerContext almacena las capas con geometryType
+   ↓
+3. ChatBridge detecta cambios → actualiza window.layersAnalysisData
+   ↓
+4. Usuario pregunta: "¿Cuántas capas de polígono hay?"
+   ↓
+5. Chatbox envía: {message: "...", layersData: {...}}
+   ↓
+6. Backend analiza palabras clave y responde
+   ↓
+7. Usuario recibe: "En el mapa existen 3 capas de tipo polígono."
