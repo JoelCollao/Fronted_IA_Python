@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useLayers } from '../../core/contexts/LayerContext';
+import { GeometryType } from '../../core/types/gis.types';  // ✅ AGREGAR ESTA LÍNEA
 import { useMap } from '../../core/contexts/MapContext';
 import L from 'leaflet';
 
@@ -20,6 +21,19 @@ const loadShpJS = async () => {
     }
   }
   return shp;
+};
+
+// 🔍 Función para detectar el tipo de geometría predominante
+const detectGeometryType = (geoJson: any): GeometryType | undefined => {
+  if (!geoJson?.features || geoJson.features.length === 0) {
+    return undefined;
+  }
+  
+  // Obtener tipo del primer feature
+  const firstGeometry = geoJson.features[0]?.geometry?.type;
+  console.log('🎯 Tipo de geometría detectada:', firstGeometry);
+  
+  return firstGeometry as GeometryType;
 };
 
 export const LayerPanel: React.FC = () => {
@@ -191,7 +205,9 @@ export const LayerPanel: React.FC = () => {
               duration: 1.0
             });
           }, 300);
-        }
+        }        // Detectar tipo de geometría
+        const geometryTypeKml = detectGeometryType(geoJsonData);
+        console.log(' KML - Geometría detectada:', geometryTypeKml);
 
         // Crear objeto de capa para el contexto
         const newLayer = {
@@ -200,6 +216,8 @@ export const LayerPanel: React.FC = () => {
           type: 'geojson' as const,
           visible: true,
           opacity: 1,
+          geometryType: geometryTypeKml,
+          zIndex: 1000,  //  Campo agregado
           data: geoJsonData,
           leafletLayer: layerGroup, // Guardamos el grupo para manejo
           markers: createdMarkers, // Guardamos las referencias individuales
@@ -434,9 +452,11 @@ export const LayerPanel: React.FC = () => {
               duration: 1.2
             });
           }, 400);
-        }
+        }        const layerGroup = L.layerGroup(createdMarkers);
 
-        const layerGroup = L.layerGroup(createdMarkers);
+        // Detectar tipo de geometría
+        const geometryTypeShp = detectGeometryType(geoJsonData);
+        console.log(' Shapefile - Geometría detectada:', geometryTypeShp);
 
         const newLayer = {
           id: `shapefile_${Date.now()}`,
@@ -444,6 +464,8 @@ export const LayerPanel: React.FC = () => {
           type: 'geojson' as const,
           visible: true,
           opacity: 1,
+          geometryType: geometryTypeShp,
+          zIndex: 1000,  //  Campo agregado
           data: geoJsonData,
           leafletLayer: layerGroup,
           markers: createdMarkers,
@@ -610,9 +632,11 @@ export const LayerPanel: React.FC = () => {
               console.warn(`⚠️ Tipo de geometría no soportado: ${geometryType}`);
             }
           });
-        }
+        }        const layerGroup = L.layerGroup(createdMarkers);
 
-        const layerGroup = L.layerGroup(createdMarkers);
+        // Detectar tipo de geometría
+        const geometryTypeGj = detectGeometryType(geoJsonData);
+        console.log(' GeoJSON - Geometría detectada:', geometryTypeGj);
 
         const newLayer = {
           id: `geojson_${Date.now()}`,
@@ -620,6 +644,8 @@ export const LayerPanel: React.FC = () => {
           type: 'geojson' as const,
           visible: true,
           opacity: 1,
+          geometryType: geometryTypeGj,
+          zIndex: 1000,  //  Campo agregado
           data: geoJsonData,
           leafletLayer: layerGroup,
           markers: createdMarkers,
@@ -1256,7 +1282,7 @@ export const LayerPanel: React.FC = () => {
   );
 };
 
-// ✅ AGREGAR AQUÍ - Estilos CSS para marcadores robustos
+// ✅ AGREGAR AQUÍ - Estilos CSS para buffers
 if (typeof document !== 'undefined') {
   const styleId = 'kml-markers-style';
   if (!document.getElementById(styleId)) {
@@ -1271,6 +1297,20 @@ if (typeof document !== 'undefined') {
         border: 2px solid #ff0000;
       }
       
+      /* 🆕 NUEVO: Estilos para buffers */
+      .buffer-polygon {
+        z-index: 500 !important;
+      }
+      
+      .buffer-popup .leaflet-popup-content-wrapper {
+        border: 2px solid #ff6b35;
+        border-left: 5px solid #ff6b35;
+      }
+      
+      .buffer-popup .leaflet-popup-tip {
+        border-top-color: #ff6b35;
+      }
+      
       .leaflet-marker-icon {
         z-index: 1000 !important;
       }
@@ -1279,12 +1319,10 @@ if (typeof document !== 'undefined') {
         z-index: 1001 !important;
       }
       
-      /* Asegurar que los marcadores estén siempre encima de los controles */
       .leaflet-marker-pane {
         z-index: 1002 !important;
       }
       
-      /* Evitar que los controles oculten los marcadores */
       .leaflet-control-zoom {
         z-index: 999 !important;
       }
@@ -1296,3 +1334,6 @@ if (typeof document !== 'undefined') {
     document.head.appendChild(style);
   }
 }
+
+
+

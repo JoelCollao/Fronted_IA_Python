@@ -1,0 +1,21 @@
+﻿console.log('=== DEBUGGING: Capas en LayerContext ===');
+// Ejecuta esto en la consola del navegador (F12)
+
+// 1. Ver todas las capas disponibles
+console.log('1. Capas disponibles:', window.getAvailableLayers?.());
+
+// 2. Ver estructura completa de las capas
+console.log('2. Análisis de capas:', window.layersAnalysisData);
+
+// 3. Buscar específicamente la capa de buffer
+const bufferLayer = window.getAvailableLayers?.()?.find(l => l.id.startsWith('buffer_'));
+console.log('3. Capa de buffer encontrada:', bufferLayer);
+
+// 4. Verificar si tiene datos GeoJSON
+if (bufferLayer) {
+  console.log('   - ID:', bufferLayer.id);
+  console.log('   - Name:', bufferLayer.name);
+  console.log('   - Visible:', bufferLayer.visible);
+  console.log('   - Feature Count:', bufferLayer.featureCount);
+  console.log('   - Geometry Type:', bufferLayer.geometryType);
+}

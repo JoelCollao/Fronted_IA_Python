@@ -40,9 +40,10 @@ function handleChatboxEnter(event) {
     }
 }
 
-// Nueva función para obtener datos de capas del contexto global
+// 
+// FUNCIONALIDAD EXISTENTE: Análisis de capas
+// 
 function getLayersData() {
-    // Esta función obtiene los datos de capas que ChatBridge actualiza
     if (window.layersAnalysisData) {
         return window.layersAnalysisData;
     }
@@ -54,6 +55,17 @@ function getLayersData() {
     };
 }
 
+// 
+// NUEVA FUNCIONALIDAD: Detección de solicitudes de buffer
+// 
+function isBufferRequest(message) {
+    const messageLower = message.toLowerCase();
+    const bufferKeywords = ['buffer', 'área de influencia', 'zona de influencia', 'radio', 'genera', 'crear'];
+    const hasBufferKeyword = bufferKeywords.some(keyword => messageLower.includes(keyword));
+    const hasDistance = /\d+\s*(metros?|m\b|kilómetros?|kilometros?|km|pies?|ft|feet|millas?|miles?|mi)/i.test(messageLower);
+    
+    return hasBufferKeyword && hasDistance;
+}
 
 async function sendMessage() {
     const input = document.getElementById('chatbox-input');
@@ -81,20 +93,56 @@ async function sendMessage() {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
     try {
-        // Obtener datos de capas actuales
-        const layersData = getLayersData();
-        console.log(' Enviando datos de capas:', layersData);
+        let requestBody = {
+            message: userMessageText
+        };
+
+        // 
+        // NUEVA FUNCIONALIDAD: Verificar si es solicitud de buffer
+        // 
+        if (isBufferRequest(userMessageText)) {
+            console.log(' Solicitud de buffer detectada');
+            
+            // Obtener datos del buffer desde React
+            if (window.createBufferFromChat) {
+                const bufferData = await window.createBufferFromChat(userMessageText);
+                
+                if (bufferData.success) {
+                    requestBody.bufferRequest = bufferData.bufferRequest;
+                    requestBody.targetLayers = bufferData.targetLayers;
+                    requestBody.layersGeojson = bufferData.layersGeojson; //  NUEVO: Enviar GeoJSON
+                    console.log(' Enviando solicitud de buffer con GeoJSON:', {
+                        ...requestBody,
+                        layersGeojson: `${bufferData.layersGeojson?.features?.length || 0} features`
+                    });
+                } else {
+                    // Mostrar mensaje de error directamente
+                    messagesContainer.removeChild(typingIndicator);
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'message bot-message';
+                    errorMessage.textContent = bufferData.message;
+                    messagesContainer.appendChild(errorMessage);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    return;
+                }
+            } else {
+                console.warn(' window.createBufferFromChat no está disponible');
+            }
+        } else {
+            // 
+            // FUNCIONALIDAD EXISTENTE: Consultas de capas
+            // 
+            requestBody.layersData = getLayersData();
+            console.log(' Enviando consulta de capas:', requestBody);
+        }
         
-        // Llamar al endpoint del backend CON DATOS DE CAPAS
+        // Llamar al endpoint del backend
         const response = await fetch('http://localhost:5000/api/v1/agent', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                message: userMessageText,
-                layersData: layersData  // NUEVO: Enviar datos de capas
-            })
+            body: JSON.stringify(requestBody)
         });
         
         // Remover indicador de escritura
@@ -125,6 +173,23 @@ async function sendMessage() {
             cleanMessage = cleanMessage.replace(/\n+/g, ' ').trim();
             botMessage.textContent = cleanMessage;
             messagesContainer.appendChild(botMessage);
+
+            // 
+            //  ACTUALIZADO: Agregar capa de buffer al mapa si se recibió GeoJSON
+            // 
+            if (data.newLayerId && data.bufferGeojson) {
+                console.log(' Nueva capa de buffer recibida:', data.newLayerId);
+                console.log(' Features en buffer:', data.bufferGeojson?.features?.length || 0);
+                
+                if (window.addBufferLayerToMap) {
+                    window.addBufferLayerToMap(data.newLayerId, data.layerName, data.bufferGeojson);
+                    console.log(' Capa agregada al mapa');
+                } else {
+                    console.warn(' window.addBufferLayerToMap no está disponible');
+                }
+            } else if (data.newLayerId) {
+                console.warn(' Buffer creado pero sin GeoJSON en respuesta');
+            }
 
         } else {
             // Manejar errores de respuesta

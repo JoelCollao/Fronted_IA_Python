@@ -1,0 +1,91 @@
+﻿# ===================================================================
+# SCRIPT DE DIAGNÓSTICO: Buffer Service
+# ===================================================================
+
+Write-Host "
+" -NoNewline
+Write-Host "=" -ForegroundColor Cyan -NoNewline; Write-Host "="*70 -NoNewline; Write-Host "=" -ForegroundColor Cyan
+Write-Host " DIAGNÓSTICO: ¿Por qué el buffer no aparece en el mapa?" -ForegroundColor Yellow
+Write-Host "=" -ForegroundColor Cyan -NoNewline; Write-Host "="*70 -NoNewline; Write-Host "=" -ForegroundColor Cyan
+
+Write-Host "
+Por favor, sigue estos pasos para diagnosticar el problema:
+" -ForegroundColor White
+
+Write-Host "PASO 1: Verificar que el backend esté ejecutándose" -ForegroundColor Green
+Write-Host "   Terminal del backend debe mostrar: 'Running on http://localhost:5000'" -ForegroundColor Gray
+
+Write-Host "
+PASO 2: Abrir la aplicación frontend y consola del navegador" -ForegroundColor Green  
+Write-Host "   Presiona F12 en el navegador" -ForegroundColor Gray
+Write-Host "   Ve a la pestaña 'Console'" -ForegroundColor Gray
+
+Write-Host "
+PASO 3: Cargar una capa con puntos" -ForegroundColor Green
+Write-Host "   Cargar archivo GeoJSON, Shapefile o KML con geometrías Point" -ForegroundColor Gray
+Write-Host "   Verifica que aparezca en el LayerControl" -ForegroundColor Gray
+
+Write-Host "
+PASO 4: Enviar solicitud de buffer en el chatbox" -ForegroundColor Green
+Write-Host "   Escribe: 'realizame un buffer de 50 metros de los puntos'" -ForegroundColor Gray
+
+Write-Host "
+PASO 5: REVISAR CONSOLA DEL NAVEGADOR (F12)" -ForegroundColor Green
+Write-Host "  Busca estos mensajes:" -ForegroundColor Gray
+Write-Host "   ' Analizando solicitud de buffer:'" -ForegroundColor Gray
+Write-Host "   ' Procesando capa: [nombre] (Original: GeoJSON/Shapefile/KML)'" -ForegroundColor Gray
+Write-Host "   ' GeoJSON preparado con X features de X capas'" -ForegroundColor Gray
+Write-Host "   ' Enviando solicitud de buffer con GeoJSON:'" -ForegroundColor Gray
+Write-Host "   ' Nueva capa de buffer recibida:'" -ForegroundColor Gray
+Write-Host "   ' Capa agregada al mapa'" -ForegroundColor Gray
+Write-Host ""
+Write-Host "   Si ves ' Capa sin features válidas'  Vuelve a cargar el archivo" -ForegroundColor Red
+Write-Host "   Si ves ' window.createBufferFromChat no disponible'  Recarga la página" -ForegroundColor Red
+Write-Host "   Si ves ' Buffer creado pero sin GeoJSON en respuesta'  PROBLEMA EN BACKEND" -ForegroundColor Red
+
+Write-Host "
+PASO 6: REVISAR TERMINAL DEL BACKEND (Python)" -ForegroundColor Green
+Write-Host "  Busca estos mensajes:" -ForegroundColor Gray
+Write-Host "   ' Mensaje recibido: realizame un buffer...'" -ForegroundColor Gray
+Write-Host "   ' Procesando solicitud de buffer...'" -ForegroundColor Gray
+Write-Host "   ' GeoJSON recibido con X features'" -ForegroundColor Gray
+Write-Host "   ' Distancia en metros: 50.0'" -ForegroundColor Gray
+Write-Host "   ' [BufferProcessor] Iniciando creación de buffer'" -ForegroundColor Gray
+Write-Host "   ' [BufferProcessor] X geometrías procesadas exitosamente'" -ForegroundColor Gray
+Write-Host "   ' [BufferProcessor] GeoJSON creado exitosamente'" -ForegroundColor Gray
+Write-Host "   ' Buffer GeoJSON generado con X features'" -ForegroundColor Gray
+Write-Host "   ' bufferGeojson agregado a la respuesta'" -ForegroundColor Gray
+Write-Host ""
+Write-Host "   Si ves 'ERROR CRÍTICO: layers_geojson NO RECIBIDO' " -ForegroundColor Red
+Write-Host "     Problema: El frontend no está enviando los datos GeoJSON" -ForegroundColor Red
+Write-Host "     Solución: Verifica que ChatBridge.tsx esté incluido en App.tsx" -ForegroundColor Red
+Write-Host ""
+Write-Host "   Si ves 'ERROR: No se pudo crear el buffer GeoJSON' " -ForegroundColor Red
+Write-Host "     Problema: Error en Shapely al procesar geometrías" -ForegroundColor Red
+Write-Host "     Solución: Revisa el traceback completo en el terminal" -ForegroundColor Red
+
+Write-Host "
+" -NoNewline
+Write-Host "=" -ForegroundColor Cyan -NoNewline; Write-Host "="*70 -NoNewline; Write-Host "=" -ForegroundColor Cyan
+Write-Host " AYUDA ADICIONAL" -ForegroundColor Yellow
+Write-Host "=" -ForegroundColor Cyan -NoNewline; Write-Host "="*70 -NoNewline; Write-Host "=" -ForegroundColor Cyan
+
+Write-Host "
+Para inspeccionar las capas disponibles manualmente:" -ForegroundColor White
+Write-Host "  En la consola del navegador (F12), ejecuta:" -ForegroundColor Gray
+Write-Host "  window.getAvailableLayers()" -ForegroundColor Cyan
+Write-Host "  Esto muestra todas las capas con su formato y cantidad de features
+" -ForegroundColor Gray
+
+Write-Host "Para ver el GeoJSON que se envía al backend:" -ForegroundColor White
+Write-Host "  En la consola del navegador, ejecuta:" -ForegroundColor Gray
+Write-Host "  const data = await window.createBufferFromChat('buffer 50m de puntos')" -ForegroundColor Cyan
+Write-Host "  console.log(data.layersGeojson)" -ForegroundColor Cyan
+Write-Host "  Verifica que tenga features
+" -ForegroundColor Gray
+
+Write-Host "=" -ForegroundColor Cyan -NoNewline; Write-Host "="*70 -NoNewline; Write-Host "=" -ForegroundColor Cyan
+Write-Host ""
+
+Write-Host " EJECUTA LOS PASOS Y COPIA LOS MENSAJES QUE APAREZCAN
+" -ForegroundColor Magenta
