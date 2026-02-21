@@ -138,7 +138,7 @@ function App() {
 **Verificar en consola del navegador:**
 ```javascript
 // Interceptar la respuesta del backend
-fetch('http://localhost:5000/api/v1/agent', {
+fetch('http://localhost:5000/api/v1/orchestrator', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ 

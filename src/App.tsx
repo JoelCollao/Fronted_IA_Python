@@ -190,7 +190,7 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
       color: '#333'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h4 style={{ margin: 0, color: '#333' }}>ðŸ“ Herramientas de MediciÃ³n</h4>
+        <h4 style={{ margin: 0, color: '#333' }}>📏 Herramientas de Medición</h4>
         <button onClick={() => {
           clearMeasurements();
           onClose();
@@ -200,7 +200,7 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
           cursor: 'pointer', 
           fontSize: '18px',
           color: '#666'
-        }}>Ã—</button>
+        }}>X</button>
       </div>
       
       <div style={{ marginBottom: '15px' }}>
@@ -218,7 +218,7 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
             opacity: (isActive && mode !== 'distancia') ? 0.5 : 1
           }}
         >
-          ðŸ“ Medir Distancia
+          Medir Distancia
         </button>
         <button 
           onClick={handleMeasureArea}
@@ -234,7 +234,7 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
             opacity: (isActive && mode !== 'Ã¡rea') ? 0.5 : 1
           }}
         >
-          ðŸ“ Medir Ãrea
+          Medir Area
         </button>
         <button 
           onClick={clearMeasurements}
@@ -248,7 +248,7 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
             color: '#dc3545'
           }}
         >
-          ðŸ—‘ï¸ Limpiar
+          Limpiar
         </button>
       </div>
       
@@ -467,7 +467,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
       color: '#ecf011'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h4 style={{ margin: 0, color: '#333' }}>ðŸŽ¯ Herramientas de SelecciÃ³n</h4>
+        <h4 style={{ margin: 0, color: '#333' }}>🎯 Herramientas de Selección</h4>
         <button onClick={() => {
           clearSelections();
           onClose();
@@ -477,7 +477,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
           cursor: 'pointer', 
           fontSize: '18px',
           color: '#666'
-        }}>Ã—</button>
+        }}>X</button>
       </div>
       
       <div style={{ marginBottom: '15px' }}>
@@ -495,7 +495,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
             opacity: (isActive && mode !== 'clic') ? 0.5 : 1
           }}
         >
-          ðŸ‘† Seleccionar por Clic
+          Seleccionar por Click
         </button>
         <button 
           onClick={handleRectSelection}
@@ -511,7 +511,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
             opacity: (isActive && mode !== 'rectangular') ? 0.5 : 1
           }}
         >
-          â¬œ SelecciÃ³n Rectangular
+          Seleccion Rectangular
         </button>
         <button 
           onClick={clearSelections}
@@ -525,7 +525,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
             color: '#dc3545'
           }}
         >
-          ðŸ—‘ï¸ Limpiar SelecciÃ³n
+          Limpiar Seleccion
         </button>
       </div>
       
@@ -654,14 +654,14 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
       overflowY: 'auto'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h4 style={{ margin: 0, color: '#333' }}>ðŸ“Œ Vistas Guardadas</h4>
+        <h4 style={{ margin: 0, color: '#333' }}>📌 Vistas Guardadas</h4>
         <button onClick={onClose} style={{ 
           background: 'none', 
           border: 'none', 
           cursor: 'pointer', 
           fontSize: '18px',
           color: '#666'
-        }}>Ã—</button>
+        }}>X</button>
       </div>
       
       <div style={{ marginBottom: '15px' }}>
@@ -679,7 +679,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
             fontWeight: 'bold'
           }}
         >
-          ðŸ’¾ Guardar Vista Actual
+          Guardar Vista Actual
         </button>
       </div>
       
@@ -714,15 +714,15 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
               }}
               onClick={() => goToBookmark(bookmark)}
               >
-                ðŸ“Œ {bookmark.name}
+                Ir {bookmark.name}
               </div>
               <div style={{ 
                 fontSize: '11px', 
                 color: '#666',
                 marginBottom: '8px'
               }}>
-                ðŸ“… {bookmark.timestamp}<br/>
-                ðŸ—ºï¸ Zoom: {bookmark.zoom.toFixed(1)} â€¢ Lat: {bookmark.center[0].toFixed(4)} â€¢ Lng: {bookmark.center[1].toFixed(4)}
+                Fecha: {bookmark.timestamp}<br/>
+                Zoom: {bookmark.zoom.toFixed(1)}  Lat: {bookmark.center[0].toFixed(4)} Lon: {bookmark.center[1].toFixed(4)}
               </div>
               <div style={{ display: 'flex', gap: '4px' }}>
                 <button 
@@ -737,7 +737,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
                     color: 'white'
                   }}
                 >
-                  ðŸŽ¯ Ir
+                  Ir
                 </button>
                 <button 
                   onClick={() => renameBookmark(bookmark.id)}
@@ -751,7 +751,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
                     color: 'white'
                   }}
                 >
-                  âœï¸
+                  Cambiar Nombre
                 </button>
                 <button 
                   onClick={() => deleteBookmark(bookmark.id)}
@@ -765,7 +765,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
                     color: 'white'
                   }}
                 >
-                  ðŸ—‘ï¸
+                  Eliminar
                 </button>
               </div>
             </div>
@@ -944,7 +944,7 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
       color: '#333'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h4 style={{ margin: 0, color: '#333' }}>ðŸ” BÃºsqueda GeogrÃ¡fica</h4>
+        <h4 style={{ margin: 0, color: '#333' }}>🔍 Búsqueda Geográfica</h4>
         <button onClick={() => {
           if (searchMarkerRef.current && map) {
             map.removeLayer(searchMarkerRef.current);
@@ -1059,14 +1059,14 @@ const SimpleAttributeTable: React.FC<{onClose: () => void}> = ({ onClose }) => (
       alignItems: 'center',
       background: '#f5f5f5'
     }}>
-      <h4 style={{ margin: 0, color: '#333' }}>ðŸ“Š Tabla de Atributos</h4>
+      <h4 style={{ margin: 0, color: '#333' }}>Tabla de Atributos</h4>
       <button onClick={onClose} style={{ 
         background: 'none', 
         border: 'none', 
         cursor: 'pointer', 
         fontSize: '18px',
         color: '#666'
-      }}>Ã—</button>
+      }}>X</button>
     </div>
     <div style={{ flex: 1, padding: '15px', color: '#333' }}>
       <p style={{ color: '#666' }}>No hay capas seleccionadas para mostrar atributos.</p>

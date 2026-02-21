@@ -5,7 +5,7 @@ async function sendMessageToAgent(message) {
     try {
         console.log('📡 Enviando al backend:', message);
         
-        const response = await fetch('http://localhost:5000/api/agent', {
+        const response = await fetch('http://localhost:5000/api/v1/orchestrator', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
