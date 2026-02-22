@@ -17,10 +17,80 @@ export const ChatBridge: React.FC = () => {
       totalLayers: analysis.totalLayers,
       polygonLayers: analysis.polygonLayers,
       lineLayers: analysis.lineLayers,
-      pointLayers: analysis.pointLayers
+      pointLayers: analysis.pointLayers,
+      // ✅ AÑADIR: Conteo total de registros
+      totalFeatures: layers.reduce((sum, layer) => sum + (layer.data?.features?.length || 0), 0),
+      // ✅ AÑADIR: Detalle por capa
+      layersDetails: layers.map(layer => ({
+        id: layer.id,
+        name: layer.name,
+        type: layer.type,
+        geometryType: layer.geometryType,
+        featureCount: layer.data?.features?.length || 0,
+        visible: layer.visible
+      }))
     };
 
     console.log('📊 Datos de capas actualizados:', (window as any).layersAnalysisData);
+
+     // ✅ NUEVA FUNCIÓN: Obtener registros por tipo de geometría
+    (window as any).getFeatureCountByGeometry = (geometryType: string) => {
+      const targetType = geometryType.toLowerCase();
+      const matchingLayers = layers.filter(layer => 
+        layer.geometryType?.toLowerCase() === targetType
+      );
+
+      const totalFeatures = matchingLayers.reduce((sum, layer) => 
+        sum + (layer.data?.features?.length || 0), 0
+      );
+
+      return {
+        geometryType: geometryType,
+        layerCount: matchingLayers.length,
+        totalFeatures: totalFeatures,
+        layers: matchingLayers.map(layer => ({
+          id: layer.id,
+          name: layer.name,
+          featureCount: layer.data?.features?.length || 0
+        }))
+      };
+    };
+
+    // ✅ FUNCIÓN GENERAL: Obtener estadísticas completas
+    (window as any).getLayerStatistics = () => {
+      return {
+        totalLayers: layers.length,
+        totalFeatures: layers.reduce((sum, layer) => 
+          sum + (layer.data?.features?.length || 0), 0
+        ),
+        byGeometry: {
+          point: getFeaturesByType('point'),
+          linestring: getFeaturesByType('linestring'),
+          polygon: getFeaturesByType('polygon')
+        },
+        layers: layers.map(layer => ({
+          id: layer.id,
+          name: layer.name,
+          type: layer.type,
+          geometryType: layer.geometryType,
+          featureCount: layer.data?.features?.length || 0,
+          visible: layer.visible
+        }))
+      };
+    };
+
+    // Función auxiliar
+    const getFeaturesByType = (type: string) => {
+      const matching = layers.filter(l => 
+        l.geometryType?.toLowerCase() === type.toLowerCase()
+      );
+      return {
+        layerCount: matching.length,
+        featureCount: matching.reduce((sum, l) => 
+          sum + (l.data?.features?.length || 0), 0
+        )
+      };
+    };
 
     // Exponer función para crear buffer
     (window as any).createBufferFromChat = async (message: string) => {
