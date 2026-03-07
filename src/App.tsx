@@ -14,7 +14,7 @@ import './App.css';
 
 // DeclaraciÃ³n de tipos para leaflet-geometryutil
 declare module 'leaflet' {
-  namespace GeometryUtil {
+  export namespace GeometryUtil {
     function geodesicArea(latlngs: LatLng[]): number;
   }
 }

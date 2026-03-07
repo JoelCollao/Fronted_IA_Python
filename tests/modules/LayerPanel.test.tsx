@@ -169,7 +169,6 @@ describe('LayerPanel', () => {
 
   // Test 9: Panel vacío
   test('muestra mensaje cuando no hay capas', () => {
-    // Override el mock para devolver array vacío
     jest.mocked(require('../../../src/core/contexts/LayerContext').useLayers).mockReturnValue({
       layers: [],
       addLayer: mockAddLayer,
