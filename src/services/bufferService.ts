@@ -21,13 +21,13 @@ export class BufferService {
    */
   static parseBufferRequest(message: string): BufferRequest | null {
     const messageLower = message.toLowerCase();
-    
+
     // Detectar distancia (números seguidos de unidad)
     const patterns = [
       { regex: /(\d+)\s*(metros?|m\b)/i, unit: 'meters' as const },
       { regex: /(\d+)\s*(kilómetros?|kilometros?|km)/i, unit: 'kilometers' as const },
       { regex: /(\d+)\s*(pies?|ft|feet)/i, unit: 'feet' as const },
-      { regex: /(\d+)\s*(millas?|miles?|mi)/i, unit: 'miles' as const }
+      { regex: /(\d+)\s*(millas?|miles?|mi)/i, unit: 'miles' as const },
     ];
 
     for (const pattern of patterns) {
@@ -36,7 +36,7 @@ export class BufferService {
         const distance = parseInt(match[1]);
         return {
           distance,
-          unit: pattern.unit
+          unit: pattern.unit,
         };
       }
     }
@@ -49,19 +49,25 @@ export class BufferService {
    */
   static detectGeometryType(message: string): 'Point' | 'LineString' | 'Polygon' | undefined {
     const messageLower = message.toLowerCase();
-    
+
     if (messageLower.includes('punto') || messageLower.includes('point')) {
       return 'Point';
     }
-    if (messageLower.includes('línea') || messageLower.includes('linea') || 
-        messageLower.includes('line')) {
+    if (
+      messageLower.includes('línea') ||
+      messageLower.includes('linea') ||
+      messageLower.includes('line')
+    ) {
       return 'LineString';
     }
-    if (messageLower.includes('polígono') || messageLower.includes('poligono') || 
-        messageLower.includes('polygon')) {
+    if (
+      messageLower.includes('polígono') ||
+      messageLower.includes('poligono') ||
+      messageLower.includes('polygon')
+    ) {
       return 'Polygon';
     }
-    
+
     return undefined;
   }
 
@@ -70,12 +76,22 @@ export class BufferService {
    */
   static isBufferRequest(message: string): boolean {
     const messageLower = message.toLowerCase();
-    const bufferKeywords = ['buffer', 'área de influencia', 'zona de influencia', 'radio', 'genera', 'crear'];
-    
+    const bufferKeywords = [
+      'buffer',
+      'área de influencia',
+      'zona de influencia',
+      'radio',
+      'genera',
+      'crear',
+    ];
+
     // Debe contener "buffer" o palabras relacionadas Y una distancia
     const hasBufferKeyword = bufferKeywords.some(keyword => messageLower.includes(keyword));
-    const hasDistance = /\d+\s*(metros?|m\b|kilómetros?|kilometros?|km|pies?|ft|feet|millas?|miles?|mi)/i.test(messageLower);
-    
+    const hasDistance =
+      /\d+\s*(metros?|m\b|kilómetros?|kilometros?|km|pies?|ft|feet|millas?|miles?|mi)/i.test(
+        messageLower
+      );
+
     return hasBufferKeyword && hasDistance;
   }
 
@@ -83,7 +99,7 @@ export class BufferService {
    * Filtra capas según el tipo de geometría solicitado
    */
   static filterLayersByGeometry(
-    layers: LayerInfo[], 
+    layers: LayerInfo[],
     geometryType?: 'Point' | 'LineString' | 'Polygon'
   ): LayerInfo[] {
     if (!geometryType) {
@@ -92,7 +108,7 @@ export class BufferService {
 
     return layers.filter(layer => {
       if (!layer.visible || !layer.geometryType) return false;
-      
+
       if (geometryType === 'Point') {
         return layer.geometryType === 'Point' || layer.geometryType === 'MultiPoint';
       }
@@ -102,7 +118,7 @@ export class BufferService {
       if (geometryType === 'Polygon') {
         return layer.geometryType === 'Polygon' || layer.geometryType === 'MultiPolygon';
       }
-      
+
       return false;
     });
   }
@@ -111,7 +127,7 @@ export class BufferService {
    * Genera el mensaje de solicitud completo para el backend
    */
   static buildBufferRequest(
-    message: string, 
+    message: string,
     layers: LayerInfo[]
   ): { request: BufferRequest; targetLayers: LayerInfo[] } | null {
     if (!this.isBufferRequest(message)) {
@@ -130,31 +146,31 @@ export class BufferService {
       request: {
         ...bufferParams,
         geometryType,
-        layerIds: targetLayers.map(layer => layer.id)
+        layerIds: targetLayers.map(layer => layer.id),
       },
-      targetLayers
+      targetLayers,
     };
   }
 
   /**
    * Genera mensaje de confirmación al usuario
    */
-  static generateConfirmationMessage(
-    request: BufferRequest,
-    targetLayers: LayerInfo[]
-  ): string {
+  static generateConfirmationMessage(request: BufferRequest, targetLayers: LayerInfo[]): string {
     if (targetLayers.length === 0) {
       return `No se encontraron capas cargadas ${request.geometryType ? `de tipo ${request.geometryType}` : ''} en el mapa.`;
     }
 
     const layerNames = targetLayers.map(l => l.name).join(', ');
-    const geomTypeText = request.geometryType 
-      ? ` de tipo ${request.geometryType}` 
-      : '';
+    const geomTypeText = request.geometryType ? ` de tipo ${request.geometryType}` : '';
 
-    const unitText = request.unit === 'meters' ? 'metros' : 
-                     request.unit === 'kilometers' ? 'kilómetros' : 
-                     request.unit === 'feet' ? 'pies' : 'millas';
+    const unitText =
+      request.unit === 'meters'
+        ? 'metros'
+        : request.unit === 'kilometers'
+          ? 'kilómetros'
+          : request.unit === 'feet'
+            ? 'pies'
+            : 'millas';
 
     return `Se generará un buffer de ${request.distance} ${unitText} para las capas${geomTypeText}: ${layerNames}`;
   }

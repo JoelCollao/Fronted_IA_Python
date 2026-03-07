@@ -11,11 +11,9 @@ export class GeoUtils {
     const minutesNotTruncated = (absolute - degrees) * 60;
     const minutes = Math.floor(minutesNotTruncated);
     const seconds = Math.floor((minutesNotTruncated - minutes) * 60);
-    
-    const direction = isLatitude 
-      ? coordinate >= 0 ? 'N' : 'S'
-      : coordinate >= 0 ? 'E' : 'W';
-    
+
+    const direction = isLatitude ? (coordinate >= 0 ? 'N' : 'S') : coordinate >= 0 ? 'E' : 'W';
+
     return `${degrees}°${minutes}'${seconds}"${direction}`;
   }
 

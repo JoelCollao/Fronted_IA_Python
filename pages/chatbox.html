@@ -34,6 +34,64 @@ function toggleChatbox() {
     }
 }
 
+//
+// ⚡ PRIORIDAD 0: Respuesta LOCAL desde datos ya cargados en memoria
+//    No llama al backend — responde al instante
+//
+function answerLocalQuery(message) {
+    const msg = message.toLowerCase().trim();
+    const layersData = window.layersAnalysisData;
+    const getStats = window.getLayerStatistics;
+
+    if (!layersData && !getStats) return null;
+    const stats = getStats ? getStats() : layersData;
+
+    // --- Registros / features (DETALLE) ---
+        // --- Registros / features (DETALLE) ---
+    if (_hasAny(msg, [
+        'cuantos registros', 'total de registros',
+        'registros tienen las capas', 'registros tiene las capas',
+        'registros tienen', 'registros hay'
+    ])) {
+        const f = stats.totalFeatures || 0;
+        const details = stats.layersDetails || [];
+        
+        console.log('🔍 DEBUG - totalFeatures:', f);
+        console.log('🔍 DEBUG - stats completo:', stats);
+        console.log('🔍 DEBUG - layersDetails:', stats.layersDetails);
+        console.log('🔍 DEBUG - details:', details);
+        console.log('🔍 DEBUG - details.length:', details.length);
+        
+        let html = 'Hay <strong>' + f + '</strong> registros en total.';
+        if (details.length > 0) {
+            console.log('✅ SÍ entrando al detalle');
+            html += '<br/><br/><strong>📊 Detalle por capa:</strong>';
+            details.forEach(function(l, i) {
+                console.log('  📌 Capa ' + (i+1) + ':', l.name, 'con', l.featureCount, 'registros');
+                html += '<br/>&nbsp;&nbsp;' + (i+1) + '. <strong>' + l.name + '</strong>: ' + l.featureCount + ' registros';
+            });
+            console.log('✅ HTML generado:', html);
+        } else {
+            console.log('❌ NO entrando al detalle, details.length es:', details.length);
+        }
+        return _ok(html, f);
+    }
+
+    // --- Total de capas ---
+    if (_hasAny(msg, [
+        'cuantas capas', 'total de capas', 'capas hay',
+        'capas estan cargadas', 'capas cargadas en el mapa'
+    ])) {
+        const t = stats.totalLayers || 0;
+        return _ok('Hay <strong>' + t + '</strong> capas cargadas en total.', t);
+    }
+
+    return null;
+}
+
+function _ok(html, count) { return { html: html, count: count }; }
+function _hasAny(msg, patterns) { return patterns.some(function(p) { return msg.includes(p); }); }
+
 function handleChatboxEnter(event) {
     if (event.key === 'Enter') {
         sendMessage();
@@ -141,6 +199,27 @@ async function sendMessage() {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
     try {
+        
+        // ⚡ PRIORIDAD 0: RESPUESTA LOCAL
+        const localAnswer = answerLocalQuery(userMessageText);
+        if (localAnswer) {
+            console.log('⚡ Respondido localmente (LOCAL)');
+            messagesContainer.removeChild(typingIndicator);
+            
+            const botMessage = document.createElement('div');
+            botMessage.className = 'message bot-message';
+            botMessage.innerHTML = '<div style="padding: 12px; background: #e8f5e9; border-radius: 8px; border-left: 4px solid #28a745;">' +
+                '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #c8e6c9;">' +
+                '<span style="font-size: 20px;">⚡</span>' +
+                '<strong style="color: #28a745; font-size: 14px;">Respuesta Local</strong>' +
+                '</div>' +
+                '<div style="background: white; padding: 10px; border-radius: 6px;">' + localAnswer.html + '</div>' +
+                '</div>';
+            messagesContainer.appendChild(botMessage);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return; // ✅ NO ENVIAR AL BACKEND
+        }
+
         let requestBody = {
             message: userMessageText
         };

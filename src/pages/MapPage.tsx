@@ -25,7 +25,7 @@ export const MapPage: React.FC = () => {
     wmsLayers: [],
     loading: true,
     error: null,
-    sidebarOpen: true
+    sidebarOpen: true,
   });
 
   // Cargar datos iniciales
@@ -39,55 +39,57 @@ export const MapPage: React.FC = () => {
 
       // Cargar ejemplo de GeoJSON local
       const sampleGeoJSON = {
-        type: "FeatureCollection",
+        type: 'FeatureCollection',
         features: [
           {
-            type: "Feature",
+            type: 'Feature',
             properties: {
-              name: "Madrid Centro",
-              population: "3200000",
-              type: "Ciudad"
+              name: 'Madrid Centro',
+              population: '3200000',
+              type: 'Ciudad',
             },
             geometry: {
-              type: "Point",
-              coordinates: [-3.7038, 40.4168]
-            }
+              type: 'Point',
+              coordinates: [-3.7038, 40.4168],
+            },
           },
           {
-            type: "Feature",
+            type: 'Feature',
             properties: {
-              name: "Parque del Retiro",
-              area: "1.25 km²",
-              type: "Parque"
+              name: 'Parque del Retiro',
+              area: '1.25 km²',
+              type: 'Parque',
             },
             geometry: {
-              type: "Polygon",
-              coordinates: [[
-                [-3.6840, 40.4154],
-                [-3.6750, 40.4154],
-                [-3.6750, 40.4200],
-                [-3.6840, 40.4200],
-                [-3.6840, 40.4154]
-              ]]
-            }
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [-3.684, 40.4154],
+                  [-3.675, 40.4154],
+                  [-3.675, 40.42],
+                  [-3.684, 40.42],
+                  [-3.684, 40.4154],
+                ],
+              ],
+            },
           },
           {
-            type: "Feature",
+            type: 'Feature',
             properties: {
-              name: "Gran Vía",
-              length: "1.3 km",
-              type: "Calle"
+              name: 'Gran Vía',
+              length: '1.3 km',
+              type: 'Calle',
             },
             geometry: {
-              type: "LineString",
+              type: 'LineString',
               coordinates: [
                 [-3.7097, 40.4198],
-                [-3.7020, 40.4202],
-                [-3.6969, 40.4210]
-              ]
-            }
-          }
-        ]
+                [-3.702, 40.4202],
+                [-3.6969, 40.421],
+              ],
+            },
+          },
+        ],
       };
 
       // Simular carga de datos del backend Flask
@@ -104,27 +106,26 @@ export const MapPage: React.FC = () => {
         {
           url: geoServerService.getWMSUrl({
             workspace: 'demo',
-            layerName: 'countries'
+            layerName: 'countries',
           }),
           layers: 'demo:countries',
           name: 'Países del Mundo',
-          visible: false
-        }
+          visible: false,
+        },
       ];
 
       setState(prev => ({
         ...prev,
         geoJsonData: sampleGeoJSON,
         wmsLayers: exampleWMSLayers,
-        loading: false
+        loading: false,
       }));
-
     } catch (error) {
       console.error('Error cargando datos:', error);
       setState(prev => ({
         ...prev,
         error: error instanceof Error ? error.message : 'Error desconocido',
-        loading: false
+        loading: false,
       }));
     }
   };
@@ -153,23 +154,19 @@ export const MapPage: React.FC = () => {
       <Sidebar
         title="Control de Capas"
         isOpen={state.sidebarOpen}
-        onToggle={(open) => setState(prev => ({ ...prev, sidebarOpen: open }))}
+        onToggle={open => setState(prev => ({ ...prev, sidebarOpen: open }))}
         position="left"
       >
         <div className="space-y-4">
           <div>
             <h3 className="font-semibold mb-2">Información</h3>
-            <p className="text-sm text-gray-600">
-              Aplicación GIS con React + Leaflet
-            </p>
+            <p className="text-sm text-gray-600">Aplicación GIS con React + Leaflet</p>
             <p className="text-sm text-gray-600 mt-1">
               Funcionalidades: Capas WMS, GeoJSON, Mediciones
             </p>
           </div>
 
-          {state.error && (
-            <ErrorMessage message={state.error} onRetry={handleRetry} />
-          )}
+          {state.error && <ErrorMessage message={state.error} onRetry={handleRetry} />}
 
           <div>
             <h3 className="font-semibold mb-2">Datos Cargados</h3>
@@ -195,10 +192,8 @@ export const MapPage: React.FC = () => {
       </Sidebar>
 
       {/* Mapa principal */}
-      <div 
-        className={`h-full transition-all duration-300 ${
-          state.sidebarOpen ? 'md:ml-80' : 'ml-0'
-        }`}
+      <div
+        className={`h-full transition-all duration-300 ${state.sidebarOpen ? 'md:ml-80' : 'ml-0'}`}
       >
         <MapView
           geoJsonData={state.geoJsonData}

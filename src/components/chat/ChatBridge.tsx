@@ -12,7 +12,7 @@ export const ChatBridge: React.FC = () => {
   useEffect(() => {
     // Actualizar análisis de capas
     const analysis = LayerAnalysisService.analyzeLayers(layers);
-    
+
     (window as any).layersAnalysisData = {
       totalLayers: analysis.totalLayers,
       polygonLayers: analysis.polygonLayers,
@@ -27,21 +27,22 @@ export const ChatBridge: React.FC = () => {
         type: layer.type,
         geometryType: layer.geometryType,
         featureCount: layer.data?.features?.length || 0,
-        visible: layer.visible
-      }))
+        visible: layer.visible,
+      })),
     };
 
     console.log('📊 Datos de capas actualizados:', (window as any).layersAnalysisData);
 
-     // ✅ NUEVA FUNCIÓN: Obtener registros por tipo de geometría
+    // ✅ NUEVA FUNCIÓN: Obtener registros por tipo de geometría
     (window as any).getFeatureCountByGeometry = (geometryType: string) => {
       const targetType = geometryType.toLowerCase();
-      const matchingLayers = layers.filter(layer => 
-        layer.geometryType?.toLowerCase() === targetType
+      const matchingLayers = layers.filter(
+        layer => layer.geometryType?.toLowerCase() === targetType
       );
 
-      const totalFeatures = matchingLayers.reduce((sum, layer) => 
-        sum + (layer.data?.features?.length || 0), 0
+      const totalFeatures = matchingLayers.reduce(
+        (sum, layer) => sum + (layer.data?.features?.length || 0),
+        0
       );
 
       return {
@@ -51,8 +52,8 @@ export const ChatBridge: React.FC = () => {
         layers: matchingLayers.map(layer => ({
           id: layer.id,
           name: layer.name,
-          featureCount: layer.data?.features?.length || 0
-        }))
+          featureCount: layer.data?.features?.length || 0,
+        })),
       };
     };
 
@@ -60,13 +61,11 @@ export const ChatBridge: React.FC = () => {
     (window as any).getLayerStatistics = () => {
       return {
         totalLayers: layers.length,
-        totalFeatures: layers.reduce((sum, layer) => 
-          sum + (layer.data?.features?.length || 0), 0
-        ),
+        totalFeatures: layers.reduce((sum, layer) => sum + (layer.data?.features?.length || 0), 0),
         byGeometry: {
           point: getFeaturesByType('point'),
           linestring: getFeaturesByType('linestring'),
-          polygon: getFeaturesByType('polygon')
+          polygon: getFeaturesByType('polygon'),
         },
         layers: layers.map(layer => ({
           id: layer.id,
@@ -74,34 +73,30 @@ export const ChatBridge: React.FC = () => {
           type: layer.type,
           geometryType: layer.geometryType,
           featureCount: layer.data?.features?.length || 0,
-          visible: layer.visible
-        }))
+          visible: layer.visible,
+        })),
       };
     };
 
     // Función auxiliar
     const getFeaturesByType = (type: string) => {
-      const matching = layers.filter(l => 
-        l.geometryType?.toLowerCase() === type.toLowerCase()
-      );
+      const matching = layers.filter(l => l.geometryType?.toLowerCase() === type.toLowerCase());
       return {
         layerCount: matching.length,
-        featureCount: matching.reduce((sum, l) => 
-          sum + (l.data?.features?.length || 0), 0
-        )
+        featureCount: matching.reduce((sum, l) => sum + (l.data?.features?.length || 0), 0),
       };
     };
 
     // Exponer función para crear buffer
     (window as any).createBufferFromChat = async (message: string) => {
       console.log('🎯 Analizando solicitud de buffer:', message);
-      
+
       const bufferData = BufferService.buildBufferRequest(message, layers);
-      
+
       if (!bufferData) {
         return {
           success: false,
-          message: 'No se pudo interpretar la solicitud de buffer.'
+          message: 'No se pudo interpretar la solicitud de buffer.',
         };
       }
 
@@ -109,34 +104,40 @@ export const ChatBridge: React.FC = () => {
         return {
           success: false,
           message: BufferService.generateConfirmationMessage(
-            bufferData.request, 
+            bufferData.request,
             bufferData.targetLayers
-          )
+          ),
         };
       }
 
       // Preparar GeoJSON de capas origen
-      const layersGeojson = bufferData.targetLayers.map(layer => {
-        const featureCount = layer.data?.features?.length || 0;
-        console.log(`📦 Procesando capa: ${layer.name} (Original: ${layer.type === 'geojson' ? 'GeoJSON' : 'Otro'}, Features: ${featureCount})`);
-        
-        return {
-          id: layer.id,
-          name: layer.name,
-          geojson: layer.data,
-          featureCount
-        };
-      }).filter(layer => layer.geojson && layer.featureCount > 0);
+      const layersGeojson = bufferData.targetLayers
+        .map(layer => {
+          const featureCount = layer.data?.features?.length || 0;
+          console.log(
+            `📦 Procesando capa: ${layer.name} (Original: ${layer.type === 'geojson' ? 'GeoJSON' : 'Otro'}, Features: ${featureCount})`
+          );
+
+          return {
+            id: layer.id,
+            name: layer.name,
+            geojson: layer.data,
+            featureCount,
+          };
+        })
+        .filter(layer => layer.geojson && layer.featureCount > 0);
 
       if (layersGeojson.length === 0) {
         return {
           success: false,
-          message: 'Las capas seleccionadas no contienen geometrías válidas.'
+          message: 'Las capas seleccionadas no contienen geometrías válidas.',
         };
       }
 
       const totalFeatures = layersGeojson.reduce((sum, layer) => sum + layer.featureCount, 0);
-      console.log(`✅ GeoJSON preparado con ${totalFeatures} features de ${layersGeojson.length} capas`);
+      console.log(
+        `✅ GeoJSON preparado con ${totalFeatures} features de ${layersGeojson.length} capas`
+      );
       console.log('   Formatos soportados: GeoJSON, Shapefile (.shp/.zip), KML');
 
       return {
@@ -145,18 +146,22 @@ export const ChatBridge: React.FC = () => {
         targetLayers: bufferData.targetLayers.map(l => ({
           id: l.id,
           name: l.name,
-          geometryType: l.geometryType
+          geometryType: l.geometryType,
         })),
         layersGeojson,
         confirmationMessage: BufferService.generateConfirmationMessage(
           bufferData.request,
           bufferData.targetLayers
-        )
+        ),
       };
     };
 
     // Función para agregar buffer Y DIBUJARLO en el mapa
-    (window as any).addBufferLayerToMap = (bufferGeojson: any, layerName: string, layerId: string) => {
+    (window as any).addBufferLayerToMap = (
+      bufferGeojson: any,
+      layerName: string,
+      layerId: string
+    ) => {
       if (!map) {
         console.error('❌ Mapa no disponible');
         return;
@@ -165,7 +170,7 @@ export const ChatBridge: React.FC = () => {
       console.log('🗺️ Agregando capa de buffer al mapa...', {
         layerId,
         layerName,
-        featureCount: bufferGeojson.features?.length
+        featureCount: bufferGeojson.features?.length,
       });
 
       if (!bufferGeojson.features || bufferGeojson.features.length === 0) {
@@ -188,7 +193,9 @@ export const ChatBridge: React.FC = () => {
           let coordinates: number[][][] = [];
 
           if (geometryType === 'Polygon') {
-            coordinates = [feature.geometry.coordinates[0].map((coord: number[]) => [coord[1], coord[0]])];
+            coordinates = [
+              feature.geometry.coordinates[0].map((coord: number[]) => [coord[1], coord[0]]),
+            ];
           } else if (geometryType === 'MultiPolygon') {
             coordinates = feature.geometry.coordinates.map((polygon: number[][][]) =>
               polygon[0].map((coord: number[]) => [coord[1], coord[0]])
@@ -202,10 +209,11 @@ export const ChatBridge: React.FC = () => {
             opacity: 0.8,
             fillOpacity: 0.3,
             dashArray: '5, 5',
-            className: 'buffer-polygon'
+            className: 'buffer-polygon',
           });
 
-          polygon.bindPopup(`
+          polygon.bindPopup(
+            `
             <div style="color: #333; min-width: 200px;">
               <h4 style="margin: 0 0 8px 0; color: #ff6b35; border-bottom: 2px solid #ff6b35; padding-bottom: 5px;">
                 🛡️ ${layerName}
@@ -215,10 +223,12 @@ export const ChatBridge: React.FC = () => {
               <p style="margin: 4px 0;"><strong>Capa origen:</strong> ${properties.sourceLayer || 'N/A'}</p>
               <small style="color: #666;">🔶 Capa generada por análisis GIS</small>
             </div>
-          `, {
-            maxWidth: 300,
-            className: 'buffer-popup'
-          });
+          `,
+            {
+              maxWidth: 300,
+              className: 'buffer-popup',
+            }
+          );
 
           polygon.addTo(map);
           createdMarkers.push(polygon);
@@ -245,8 +255,8 @@ export const ChatBridge: React.FC = () => {
           opacity: 0.8,
           fillOpacity: 0.3,
           strokeColor: '#ff6b35',
-          fillColor: '#ff6b35'
-        }
+          fillColor: '#ff6b35',
+        },
       };
 
       // ✅ CORREGIDO: Usar addLayer en lugar de setLayers
@@ -275,7 +285,7 @@ export const ChatBridge: React.FC = () => {
             padding: [50, 50],
             maxZoom: 16,
             animate: true,
-            duration: 1.5
+            duration: 1.5,
           });
           console.log('🎯 Zoom ajustado al buffer');
         }
@@ -292,12 +302,11 @@ export const ChatBridge: React.FC = () => {
           visible: layer.visible,
           geometryType: layer.geometryType,
           featureCount: layer.data?.features?.length || 0,
-          hasLeafletLayer: !!layer.leafletLayer
+          hasLeafletLayer: !!layer.leafletLayer,
         });
       });
       return layers;
     };
-
   }, [layers, addLayer, map]);
 
   return null;

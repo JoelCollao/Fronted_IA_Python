@@ -11,12 +11,9 @@ export class BaseApiService {
     this.baseURL = baseURL;
   }
 
-  protected async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  protected async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
-    
+
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -27,9 +24,9 @@ export class BaseApiService {
 
     try {
       console.log(`🌐 ${options.method || 'GET'} ${url}`);
-      
+
       const response = await fetch(url, config);
-      
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`HTTP ${response.status}: ${errorText}`);

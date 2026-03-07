@@ -1,6 +1,6 @@
 const API_URL = 'http://localhost:5000/api/v1/orchestrator';
 
-export const sendMessageToAgent = async (message) => {
+export const sendMessageToAgent = async message => {
   try {
     const response = await fetch(API_URL, {
       method: 'POST',

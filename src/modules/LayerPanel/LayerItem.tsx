@@ -18,7 +18,7 @@ export const LayerItem: React.FC<LayerItemProps> = ({ layer, isActive, onActivat
     if (layer.bounds) {
       fitBounds([
         [layer.bounds.getSouth(), layer.bounds.getWest()],
-        [layer.bounds.getNorth(), layer.bounds.getEast()]
+        [layer.bounds.getNorth(), layer.bounds.getEast()],
       ]);
     }
   };
@@ -38,7 +38,7 @@ export const LayerItem: React.FC<LayerItemProps> = ({ layer, isActive, onActivat
       {/* Visibility toggle */}
       <button
         className="layer-visibility"
-        onClick={(e) => {
+        onClick={e => {
           e.stopPropagation();
           toggleLayerVisibility(layer.id);
         }}
@@ -59,7 +59,7 @@ export const LayerItem: React.FC<LayerItemProps> = ({ layer, isActive, onActivat
       <div className="layer-actions">
         <button
           className="btn-icon"
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation();
             setShowOptions(!showOptions);
           }}
@@ -71,7 +71,7 @@ export const LayerItem: React.FC<LayerItemProps> = ({ layer, isActive, onActivat
 
       {/* Options panel */}
       {showOptions && (
-        <div className="layer-options" onClick={(e) => e.stopPropagation()}>
+        <div className="layer-options" onClick={e => e.stopPropagation()}>
           {/* Opacity control */}
           <div className="layer-option">
             <label>Opacidad: {Math.round(layer.opacity * 100)}%</label>
@@ -87,18 +87,11 @@ export const LayerItem: React.FC<LayerItemProps> = ({ layer, isActive, onActivat
 
           {/* Action buttons */}
           <div className="layer-option-buttons">
-            <button
-              className="btn-secondary"
-              onClick={handleZoomTo}
-              disabled={!layer.bounds}
-            >
+            <button className="btn-secondary" onClick={handleZoomTo} disabled={!layer.bounds}>
               <i className="icon-zoom"></i>
               Zoom a capa
             </button>
-            <button
-              className="btn-danger"
-              onClick={() => removeLayer(layer.id)}
-            >
+            <button className="btn-danger" onClick={() => removeLayer(layer.id)}>
               <i className="icon-trash"></i>
               Eliminar
             </button>

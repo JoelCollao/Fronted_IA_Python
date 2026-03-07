@@ -16,7 +16,9 @@ const SelectionContext = createContext<SelectionContextType | undefined>(undefin
 
 export const SelectionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [selections, setSelections] = useState<Map<string, GeoJSONFeature[]>>(new Map());
-  const [activeSelectionTool, setActiveTool] = useState<'click' | 'rectangle' | 'polygon' | null>(null);
+  const [activeSelectionTool, setActiveTool] = useState<'click' | 'rectangle' | 'polygon' | null>(
+    null
+  );
 
   const setActiveSelectionTool = useCallback((tool: 'click' | 'rectangle' | 'polygon' | null) => {
     setActiveTool(tool);
@@ -43,13 +45,19 @@ export const SelectionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   }, []);
 
-  const getSelection = useCallback((layerId: string) => {
-    return selections.get(layerId) || [];
-  }, [selections]);
+  const getSelection = useCallback(
+    (layerId: string) => {
+      return selections.get(layerId) || [];
+    },
+    [selections]
+  );
 
-  const hasSelection = useCallback((layerId: string) => {
-    return (selections.get(layerId)?.length || 0) > 0;
-  }, [selections]);
+  const hasSelection = useCallback(
+    (layerId: string) => {
+      return (selections.get(layerId)?.length || 0) > 0;
+    },
+    [selections]
+  );
 
   const getSelectionCount = useCallback(() => {
     let count = 0;
@@ -60,16 +68,18 @@ export const SelectionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [selections]);
 
   return (
-    <SelectionContext.Provider value={{
-      selections,
-      activeSelectionTool,
-      setActiveSelectionTool,
-      addSelection,
-      clearSelection,
-      getSelection,
-      hasSelection,
-      getSelectionCount
-    }}>
+    <SelectionContext.Provider
+      value={{
+        selections,
+        activeSelectionTool,
+        setActiveSelectionTool,
+        addSelection,
+        clearSelection,
+        getSelection,
+        hasSelection,
+        getSelectionCount,
+      }}
+    >
       {children}
     </SelectionContext.Provider>
   );

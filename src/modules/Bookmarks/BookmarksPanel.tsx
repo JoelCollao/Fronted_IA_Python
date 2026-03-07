@@ -36,7 +36,7 @@ export const BookmarksPanel: React.FC<BookmarksPanelProps> = ({ onClose }) => {
       description: newBookmarkDesc,
       center: mapState.center,
       zoom: mapState.zoom,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     saveBookmarks([...bookmarks, newBookmark]);
@@ -59,14 +59,13 @@ export const BookmarksPanel: React.FC<BookmarksPanelProps> = ({ onClose }) => {
     <div className="floating-panel bookmarks-panel">
       <div className="panel-header">
         <h3>📌 Vistas Guardadas</h3>
-        <button className="btn-close" onClick={onClose}>✕</button>
+        <button className="btn-close" onClick={onClose}>
+          ✕
+        </button>
       </div>
-      
+
       <div className="panel-content">
-        <button
-          className="tool-btn primary"
-          onClick={() => setShowAddForm(!showAddForm)}
-        >
+        <button className="tool-btn primary" onClick={() => setShowAddForm(!showAddForm)}>
           ➕ Guardar Vista Actual
         </button>
 
@@ -76,12 +75,12 @@ export const BookmarksPanel: React.FC<BookmarksPanelProps> = ({ onClose }) => {
               type="text"
               placeholder="Nombre de la vista"
               value={newBookmarkName}
-              onChange={(e) => setNewBookmarkName(e.target.value)}
+              onChange={e => setNewBookmarkName(e.target.value)}
             />
             <textarea
               placeholder="Descripción (opcional)"
               value={newBookmarkDesc}
-              onChange={(e) => setNewBookmarkDesc(e.target.value)}
+              onChange={e => setNewBookmarkDesc(e.target.value)}
               rows={2}
             />
             <div className="form-actions">
@@ -105,11 +104,9 @@ export const BookmarksPanel: React.FC<BookmarksPanelProps> = ({ onClose }) => {
               <div key={bookmark.id} className="bookmark-item">
                 <div className="bookmark-info">
                   <h4>{bookmark.name}</h4>
-                  {bookmark.description && (
-                    <p className="bookmark-desc">{bookmark.description}</p>
-                  )}
+                  {bookmark.description && <p className="bookmark-desc">{bookmark.description}</p>}
                   <p className="bookmark-meta">
-                    Zoom: {bookmark.zoom.toFixed(1)} • 
+                    Zoom: {bookmark.zoom.toFixed(1)} •
                     {new Date(bookmark.createdAt).toLocaleDateString()}
                   </p>
                 </div>

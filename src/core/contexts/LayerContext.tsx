@@ -32,29 +32,28 @@ export const LayerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
   }, []);
 
-  const removeLayer = useCallback((layerId: string) => {
-    setLayers(prev => prev.filter(l => l.id !== layerId));
-    if (activeLayerId === layerId) {
-      setActiveLayerId(null);
-    }
-  }, [activeLayerId]);
+  const removeLayer = useCallback(
+    (layerId: string) => {
+      setLayers(prev => prev.filter(l => l.id !== layerId));
+      if (activeLayerId === layerId) {
+        setActiveLayerId(null);
+      }
+    },
+    [activeLayerId]
+  );
 
   const updateLayer = useCallback((layerId: string, updates: Partial<Layer>) => {
-    setLayers(prev => prev.map(layer => 
-      layer.id === layerId ? { ...layer, ...updates } : layer
-    ));
+    setLayers(prev => prev.map(layer => (layer.id === layerId ? { ...layer, ...updates } : layer)));
   }, []);
 
   const toggleLayerVisibility = useCallback((layerId: string) => {
-    setLayers(prev => prev.map(layer =>
-      layer.id === layerId ? { ...layer, visible: !layer.visible } : layer
-    ));
+    setLayers(prev =>
+      prev.map(layer => (layer.id === layerId ? { ...layer, visible: !layer.visible } : layer))
+    );
   }, []);
 
   const setLayerOpacity = useCallback((layerId: string, opacity: number) => {
-    setLayers(prev => prev.map(layer =>
-      layer.id === layerId ? { ...layer, opacity } : layer
-    ));
+    setLayers(prev => prev.map(layer => (layer.id === layerId ? { ...layer, opacity } : layer)));
   }, []);
 
   const reorderLayers = useCallback((startIndex: number, endIndex: number) => {
@@ -62,11 +61,11 @@ export const LayerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const result = Array.from(prev);
       const [removed] = result.splice(startIndex, 1);
       result.splice(endIndex, 0, removed);
-      
+
       // Actualizar zIndex
       return result.map((layer, index) => ({
         ...layer,
-        zIndex: result.length - index
+        zIndex: result.length - index,
       }));
     });
   }, []);
@@ -75,9 +74,12 @@ export const LayerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setActiveLayerId(layerId);
   }, []);
 
-  const getLayer = useCallback((layerId: string) => {
-    return layers.find(l => l.id === layerId);
-  }, [layers]);
+  const getLayer = useCallback(
+    (layerId: string) => {
+      return layers.find(l => l.id === layerId);
+    },
+    [layers]
+  );
 
   const clearLayers = useCallback(() => {
     setLayers([]);
@@ -85,19 +87,21 @@ export const LayerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   return (
-    <LayerContext.Provider value={{
-      layers,
-      activeLayerId,
-      addLayer,
-      removeLayer,
-      updateLayer,
-      toggleLayerVisibility,
-      setLayerOpacity,
-      reorderLayers,
-      setActiveLayer,
-      getLayer,
-      clearLayers
-    }}>
+    <LayerContext.Provider
+      value={{
+        layers,
+        activeLayerId,
+        addLayer,
+        removeLayer,
+        updateLayer,
+        toggleLayerVisibility,
+        setLayerOpacity,
+        reorderLayers,
+        setActiveLayer,
+        getLayer,
+        clearLayers,
+      }}
+    >
       {children}
     </LayerContext.Provider>
   );

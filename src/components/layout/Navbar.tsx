@@ -21,45 +21,41 @@ const navigationItems: NavItem[] = [
     id: 'measurement',
     label: 'Medición',
     icon: '📏',
-    description: 'Medir distancias y áreas'
+    description: 'Medir distancias y áreas',
   },
   {
     id: 'selection',
     label: 'Selección',
     icon: '🎯',
-    description: 'Herramientas de selección espacial'
+    description: 'Herramientas de selección espacial',
   },
   {
     id: 'draw',
     label: 'Dibujo',
     icon: '✏️',
-    description: 'Dibujar geometrías'
+    description: 'Dibujar geometrías',
   },
   {
     id: 'attributes',
     label: 'Atributos',
     icon: '📊',
-    description: 'Tabla de atributos'
+    description: 'Tabla de atributos',
   },
   {
     id: 'bookmarks',
     label: 'Vistas',
     icon: '📌',
-    description: 'Gestionar vistas guardadas'
+    description: 'Gestionar vistas guardadas',
   },
   {
     id: 'search',
     label: 'Búsqueda',
     icon: '🔍',
-    description: 'Buscar ubicaciones'
-  }
+    description: 'Buscar ubicaciones',
+  },
 ];
 
-export const Navbar: React.FC<NavbarProps> = ({ 
-  activeTool, 
-  onToolChange,
-  showAttributeTable 
-}) => {
+export const Navbar: React.FC<NavbarProps> = ({ activeTool, onToolChange, showAttributeTable }) => {
   const { map, mapState } = useMap();
   const [showMapControls, setShowMapControls] = useState(false);
 
@@ -97,12 +93,13 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Herramientas principales */}
       <div className="navbar-tools">
-        {navigationItems.map((item) => (
+        {navigationItems.map(item => (
           <button
             key={item.id}
             className={`navbar-tool ${
-              (item.id === 'attributes' && showAttributeTable) || 
-              (activeTool === item.id) ? 'active' : ''
+              (item.id === 'attributes' && showAttributeTable) || activeTool === item.id
+                ? 'active'
+                : ''
             }`}
             onClick={() => onToolChange(item.id)}
             title={item.description}
@@ -116,25 +113,13 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Controles del mapa */}
       <div className="navbar-map-controls">
         <div className="map-controls-group">
-          <button
-            className="control-btn"
-            onClick={handleZoomIn}
-            title="Acercar"
-          >
+          <button className="control-btn" onClick={handleZoomIn} title="Acercar">
             <span>➕</span>
           </button>
-          <button
-            className="control-btn"
-            onClick={handleZoomOut}
-            title="Alejar"
-          >
+          <button className="control-btn" onClick={handleZoomOut} title="Alejar">
             <span>➖</span>
           </button>
-          <button
-            className="control-btn"
-            onClick={handleFullExtent}
-            title="Extensión completa"
-          >
+          <button className="control-btn" onClick={handleFullExtent} title="Extensión completa">
             <span>🌍</span>
           </button>
         </div>
@@ -148,7 +133,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Menú adicional */}
       <div className="navbar-menu">
-        <button 
+        <button
           className="menu-btn"
           onClick={() => setShowMapControls(!showMapControls)}
           title="Más opciones"

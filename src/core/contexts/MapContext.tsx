@@ -15,11 +15,11 @@ const MapContext = createContext<MapContextType | undefined>(undefined);
 
 export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [map, setMapInstance] = useState<LeafletMap | null>(null);
- const [mapState, setMapState] = useState<MapState>({
-  center: [-12.0464, -77.0428],  // Lima, Perú
-  zoom: 11,  // Zoom más cercano para ver Lima
-  basemap: 'osm'
-});
+  const [mapState, setMapState] = useState<MapState>({
+    center: [-12.0464, -77.0428], // Lima, Perú
+    zoom: 11, // Zoom más cercano para ver Lima
+    basemap: 'osm',
+  });
 
   const setMap = useCallback((mapInstance: LeafletMap | null) => {
     setMapInstance(mapInstance);
@@ -29,29 +29,37 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setMapState(prev => ({ ...prev, ...state }));
   }, []);
 
-  const flyTo = useCallback((coords: Coordinates, zoom?: number) => {
-    if (map) {
-      map.flyTo([coords.lat, coords.lng], zoom || map.getZoom(), {
-        duration: 1.5
-      });
-    }
-  }, [map]);
+  const flyTo = useCallback(
+    (coords: Coordinates, zoom?: number) => {
+      if (map) {
+        map.flyTo([coords.lat, coords.lng], zoom || map.getZoom(), {
+          duration: 1.5,
+        });
+      }
+    },
+    [map]
+  );
 
-  const fitBounds = useCallback((bounds: [[number, number], [number, number]]) => {
-    if (map) {
-      map.fitBounds(bounds, { padding: [50, 50] });
-    }
-  }, [map]);
+  const fitBounds = useCallback(
+    (bounds: [[number, number], [number, number]]) => {
+      if (map) {
+        map.fitBounds(bounds, { padding: [50, 50] });
+      }
+    },
+    [map]
+  );
 
   return (
-    <MapContext.Provider value={{
-      map,
-      setMap,
-      mapState,
-      updateMapState,
-      flyTo,
-      fitBounds
-    }}>
+    <MapContext.Provider
+      value={{
+        map,
+        setMap,
+        mapState,
+        updateMapState,
+        flyTo,
+        fitBounds,
+      }}
+    >
       {children}
     </MapContext.Provider>
   );

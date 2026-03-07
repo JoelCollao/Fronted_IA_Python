@@ -10,7 +10,8 @@ interface SelectionToolsProps {
 
 export const SelectionTools: React.FC<SelectionToolsProps> = ({ onClose }) => {
   const { map } = useMap();
-  const { activeSelectionTool, setActiveSelectionTool, clearSelection, getSelectionCount } = useSelection();
+  const { activeSelectionTool, setActiveSelectionTool, clearSelection, getSelectionCount } =
+    useSelection();
   const { layers } = useLayers();
 
   const selectionCount = getSelectionCount();
@@ -27,9 +28,11 @@ export const SelectionTools: React.FC<SelectionToolsProps> = ({ onClose }) => {
     <div className="floating-panel selection-tools">
       <div className="panel-header">
         <h3>🎯 Herramientas de Selección</h3>
-        <button className="btn-close" onClick={onClose}>✕</button>
+        <button className="btn-close" onClick={onClose}>
+          ✕
+        </button>
       </div>
-      
+
       <div className="panel-content">
         <div className="tool-buttons">
           <button
@@ -76,9 +79,12 @@ export const SelectionTools: React.FC<SelectionToolsProps> = ({ onClose }) => {
         {activeSelectionTool && (
           <div className="selection-instructions">
             <p>
-              {activeSelectionTool === 'click' && 'Haz clic en elementos del mapa para seleccionarlos'}
-              {activeSelectionTool === 'rectangle' && 'Arrastra para crear un rectángulo de selección'}
-              {activeSelectionTool === 'polygon' && 'Haz clic para dibujar un polígono de selección'}
+              {activeSelectionTool === 'click' &&
+                'Haz clic en elementos del mapa para seleccionarlos'}
+              {activeSelectionTool === 'rectangle' &&
+                'Arrastra para crear un rectángulo de selección'}
+              {activeSelectionTool === 'polygon' &&
+                'Haz clic para dibujar un polígono de selección'}
             </p>
           </div>
         )}

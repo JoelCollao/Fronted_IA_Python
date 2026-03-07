@@ -19,7 +19,7 @@ export const LayerUploader: React.FC<LayerUploaderProps> = ({ onClose }) => {
   const [serviceConfig, setServiceConfig] = useState<Partial<ServiceConfig>>({
     type: 'WMS',
     url: '',
-    layers: []
+    layers: [],
   });
 
   // Estado para URL
@@ -34,7 +34,7 @@ export const LayerUploader: React.FC<LayerUploaderProps> = ({ onClose }) => {
 
     try {
       const data = await LayerService.uploadFile(file);
-      
+
       // Crear bounds desde los datos
       let bounds: L.LatLngBounds | undefined;
       if (data.features.length > 0) {
@@ -54,8 +54,8 @@ export const LayerUploader: React.FC<LayerUploaderProps> = ({ onClose }) => {
         metadata: {
           source: 'file',
           featureCount: data.features.length,
-          createdAt: new Date()
-        }
+          createdAt: new Date(),
+        },
       };
 
       addLayer(newLayer);
@@ -78,7 +78,7 @@ export const LayerUploader: React.FC<LayerUploaderProps> = ({ onClose }) => {
 
     try {
       const data = await LayerService.loadService(serviceConfig as ServiceConfig);
-      
+
       let bounds: L.LatLngBounds | undefined;
       if (data.features.length > 0) {
         const geoJsonLayer = L.geoJSON(data as any);
@@ -98,8 +98,8 @@ export const LayerUploader: React.FC<LayerUploaderProps> = ({ onClose }) => {
         metadata: {
           source: 'service',
           featureCount: data.features.length,
-          createdAt: new Date()
-        }
+          createdAt: new Date(),
+        },
       };
 
       addLayer(newLayer);
@@ -122,7 +122,7 @@ export const LayerUploader: React.FC<LayerUploaderProps> = ({ onClose }) => {
 
     try {
       const data = await LayerService.loadGeoJSON(geoJsonUrl);
-      
+
       let bounds: L.LatLngBounds | undefined;
       if (data.features.length > 0) {
         const geoJsonLayer = L.geoJSON(data as any);
@@ -142,8 +142,8 @@ export const LayerUploader: React.FC<LayerUploaderProps> = ({ onClose }) => {
         metadata: {
           source: 'url',
           featureCount: data.features.length,
-          createdAt: new Date()
-        }
+          createdAt: new Date(),
+        },
       };
 
       addLayer(newLayer);
@@ -170,10 +170,7 @@ export const LayerUploader: React.FC<LayerUploaderProps> = ({ onClose }) => {
         >
           Servicio
         </button>
-        <button
-          className={activeTab === 'url' ? 'active' : ''}
-          onClick={() => setActiveTab('url')}
-        >
+        <button className={activeTab === 'url' ? 'active' : ''} onClick={() => setActiveTab('url')}>
           URL
         </button>
       </div>
@@ -197,9 +194,7 @@ export const LayerUploader: React.FC<LayerUploaderProps> = ({ onClose }) => {
               <i className="icon-upload"></i>
               {loading ? 'Cargando...' : 'Seleccionar archivo'}
             </button>
-            <p className="uploader-hint">
-              Formatos: GeoJSON, Shapefile, KML
-            </p>
+            <p className="uploader-hint">Formatos: GeoJSON, Shapefile, KML</p>
           </div>
         )}
 
@@ -208,7 +203,7 @@ export const LayerUploader: React.FC<LayerUploaderProps> = ({ onClose }) => {
           <div className="uploader-tab">
             <select
               value={serviceConfig.type}
-              onChange={(e) => setServiceConfig({ ...serviceConfig, type: e.target.value as any })}
+              onChange={e => setServiceConfig({ ...serviceConfig, type: e.target.value as any })}
             >
               <option value="WMS">WMS</option>
               <option value="WFS">WFS</option>
@@ -218,7 +213,7 @@ export const LayerUploader: React.FC<LayerUploaderProps> = ({ onClose }) => {
               type="text"
               placeholder="URL del servicio"
               value={serviceConfig.url}
-              onChange={(e) => setServiceConfig({ ...serviceConfig, url: e.target.value })}
+              onChange={e => setServiceConfig({ ...serviceConfig, url: e.target.value })}
             />
             <button
               className="btn-primary"
@@ -237,7 +232,7 @@ export const LayerUploader: React.FC<LayerUploaderProps> = ({ onClose }) => {
               type="text"
               placeholder="URL del GeoJSON"
               value={geoJsonUrl}
-              onChange={(e) => setGeoJsonUrl(e.target.value)}
+              onChange={e => setGeoJsonUrl(e.target.value)}
             />
             <button
               className="btn-primary"

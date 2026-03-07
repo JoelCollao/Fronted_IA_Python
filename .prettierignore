@@ -1,0 +1,24 @@
+﻿# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs
+dist/
+build/
+*.min.js
+*.min.css
+
+# Coverage
+coverage/
+
+# Config files
+.vscode/
+.github/
+*.config.js
+*.config.ts
+
+# Logs
+*.log
+
+# Other
+.husky/

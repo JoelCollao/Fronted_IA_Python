@@ -36,7 +36,7 @@ describe('MainLayout', () => {
   // Test 1: Renderizado básico
   test('renderiza correctamente el layout principal', () => {
     render(<MainLayout />);
-    
+
     expect(screen.getByTestId('navbar')).toBeInTheDocument();
     expect(screen.getByTestId('sidebar')).toBeInTheDocument();
     expect(screen.getByTestId('map-container')).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe('MainLayout', () => {
   // Test 2: Providers están presentes
   test('incluye todos los providers de contexto', () => {
     render(<MainLayout />);
-    
+
     expect(screen.getByTestId('map-provider')).toBeInTheDocument();
     expect(screen.getByTestId('layer-provider')).toBeInTheDocument();
     expect(screen.getByTestId('selection-provider')).toBeInTheDocument();
@@ -54,7 +54,7 @@ describe('MainLayout', () => {
   // Test 3: Estructura de layout
   test('mantiene la estructura de layout esperada', () => {
     const { container } = render(<MainLayout />);
-    
+
     // Verificar que el contenedor tiene los elementos principales
     expect(container.querySelector('[data-testid="navbar"]')).toBeInTheDocument();
     expect(container.querySelector('[data-testid="sidebar"]')).toBeInTheDocument();

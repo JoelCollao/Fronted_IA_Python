@@ -19,7 +19,7 @@ declare module 'leaflet' {
   }
 }
 
-export type ActiveTool = 
+export type ActiveTool =
   | 'none'
   | 'measurement'
   | 'selection'
@@ -29,7 +29,7 @@ export type ActiveTool =
   | 'search';
 
 // Herramientas de mediciÃ³n funcionales
-const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }) => {
+const FunctionalMeasurementTools: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { map } = useMap();
   const [mode, setMode] = useState('');
   const [result, setResult] = useState('');
@@ -41,11 +41,11 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
 
   const clearMeasurements = () => {
     if (!map) return;
-    
+
     markersRef.current.forEach(marker => map.removeLayer(marker));
     polylinesRef.current.forEach(polyline => map.removeLayer(polyline));
     polygonsRef.current.forEach(polygon => map.removeLayer(polygon));
-    
+
     markersRef.current = [];
     polylinesRef.current = [];
     polygonsRef.current = [];
@@ -73,20 +73,21 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
         // Crear lÃ­nea
         const polyline = L.polyline(currentPathRef.current, {
           color: 'red',
-          weight: 3
+          weight: 3,
         }).addTo(map);
         polylinesRef.current.push(polyline);
 
         // Calcular distancia total
         let totalDistance = 0;
         for (let i = 1; i < currentPathRef.current.length; i++) {
-          totalDistance += currentPathRef.current[i-1].distanceTo(currentPathRef.current[i]);
+          totalDistance += currentPathRef.current[i - 1].distanceTo(currentPathRef.current[i]);
         }
 
-        const distance = totalDistance > 1000 
-          ? `${(totalDistance / 1000).toFixed(2)} km`
-          : `${totalDistance.toFixed(2)} m`;
-        
+        const distance =
+          totalDistance > 1000
+            ? `${(totalDistance / 1000).toFixed(2)} km`
+            : `${totalDistance.toFixed(2)} m`;
+
         setResult(`Distancia total: ${distance}. Doble clic para terminar.`);
       }
     };
@@ -125,16 +126,15 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
         const polygon = L.polygon(currentPathRef.current, {
           color: 'blue',
           weight: 2,
-          fillOpacity: 0.1
+          fillOpacity: 0.1,
         }).addTo(map);
         polygonsRef.current.push(polygon);
 
         // Calcular Ã¡rea
         const area = L.GeometryUtil.geodesicArea(currentPathRef.current);
-        const areaText = area > 10000 
-          ? `${(area / 10000).toFixed(2)} hectÃ¡reas`
-          : `${area.toFixed(2)} mÂ²`;
-        
+        const areaText =
+          area > 10000 ? `${(area / 10000).toFixed(2)} hectÃ¡reas` : `${area.toFixed(2)} mÂ²`;
+
         setResult(`Ãrea: ${areaText}. Doble clic para terminar.`);
       }
     };
@@ -146,15 +146,14 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
         const finalPolygon = L.polygon(currentPathRef.current, {
           color: 'blue',
           weight: 3,
-          fillOpacity: 0.2
+          fillOpacity: 0.2,
         }).addTo(map);
         polygonsRef.current = [finalPolygon];
-        
+
         const area = L.GeometryUtil.geodesicArea(currentPathRef.current);
-        const areaText = area > 10000 
-          ? `${(area / 10000).toFixed(2)} hectÃ¡reas`
-          : `${area.toFixed(2)} mÂ²`;
-        
+        const areaText =
+          area > 10000 ? `${(area / 10000).toFixed(2)} hectÃ¡reas` : `${area.toFixed(2)} mÂ²`;
+
         setResult(`MediciÃ³n finalizada - Ãrea: ${areaText}`);
       }
       setIsActive(false);
@@ -177,90 +176,106 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
   }, [map]);
 
   return (
-    <div style={{
-      position: 'absolute',
-      top: '20px',
-      right: '20px',
-      background: 'white',
-      padding: '15px',
-      borderRadius: '8px',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-      zIndex: 500,
-      minWidth: '280px',
-      color: '#333'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+    <div
+      style={{
+        position: 'absolute',
+        top: '20px',
+        right: '20px',
+        background: 'white',
+        padding: '15px',
+        borderRadius: '8px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+        zIndex: 500,
+        minWidth: '280px',
+        color: '#333',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '15px',
+        }}
+      >
         <h4 style={{ margin: 0, color: '#333' }}>📏 Herramientas de Medición</h4>
-        <button onClick={() => {
-          clearMeasurements();
-          onClose();
-        }} style={{ 
-          background: 'none', 
-          border: 'none', 
-          cursor: 'pointer', 
-          fontSize: '18px',
-          color: '#666'
-        }}>X</button>
+        <button
+          onClick={() => {
+            clearMeasurements();
+            onClose();
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '18px',
+            color: '#666',
+          }}
+        >
+          X
+        </button>
       </div>
-      
+
       <div style={{ marginBottom: '15px' }}>
-        <button 
+        <button
           onClick={handleMeasureDistance}
           disabled={isActive && mode !== 'distancia'}
-          style={{ 
-            margin: '5px', 
-            padding: '10px 15px', 
-            border: '1px solid #007cba', 
-            borderRadius: '4px', 
+          style={{
+            margin: '5px',
+            padding: '10px 15px',
+            border: '1px solid #007cba',
+            borderRadius: '4px',
             cursor: 'pointer',
-            backgroundColor: (isActive && mode === 'distancia') ? '#007cba' : 'white',
-            color: (isActive && mode === 'distancia') ? 'white' : '#007cba',
-            opacity: (isActive && mode !== 'distancia') ? 0.5 : 1
+            backgroundColor: isActive && mode === 'distancia' ? '#007cba' : 'white',
+            color: isActive && mode === 'distancia' ? 'white' : '#007cba',
+            opacity: isActive && mode !== 'distancia' ? 0.5 : 1,
           }}
         >
           Medir Distancia
         </button>
-        <button 
+        <button
           onClick={handleMeasureArea}
           disabled={isActive && mode !== 'Ã¡rea'}
-          style={{ 
-            margin: '5px', 
-            padding: '10px 15px', 
-            border: '1px solid #007cba', 
-            borderRadius: '4px', 
+          style={{
+            margin: '5px',
+            padding: '10px 15px',
+            border: '1px solid #007cba',
+            borderRadius: '4px',
             cursor: 'pointer',
-            backgroundColor: (isActive && mode === 'Ã¡rea') ? '#007cba' : 'white',
-            color: (isActive && mode === 'Ã¡rea') ? 'white' : '#007cba',
-            opacity: (isActive && mode !== 'Ã¡rea') ? 0.5 : 1
+            backgroundColor: isActive && mode === 'Ã¡rea' ? '#007cba' : 'white',
+            color: isActive && mode === 'Ã¡rea' ? 'white' : '#007cba',
+            opacity: isActive && mode !== 'Ã¡rea' ? 0.5 : 1,
           }}
         >
           Medir Area
         </button>
-        <button 
+        <button
           onClick={clearMeasurements}
-          style={{ 
-            margin: '5px', 
-            padding: '10px 15px', 
-            border: '1px solid #dc3545', 
-            borderRadius: '4px', 
+          style={{
+            margin: '5px',
+            padding: '10px 15px',
+            border: '1px solid #dc3545',
+            borderRadius: '4px',
             cursor: 'pointer',
             backgroundColor: 'white',
-            color: '#dc3545'
+            color: '#dc3545',
           }}
         >
           Limpiar
         </button>
       </div>
-      
+
       {result && (
-        <div style={{
-          padding: '10px',
-          backgroundColor: isActive ? '#fff3cd' : '#d1ecf1',
-          borderRadius: '4px',
-          color: '#333',
-          fontSize: '14px',
-          border: `1px solid ${isActive ? '#ffeaa7' : '#bee5eb'}`
-        }}>
+        <div
+          style={{
+            padding: '10px',
+            backgroundColor: isActive ? '#fff3cd' : '#d1ecf1',
+            borderRadius: '4px',
+            color: '#333',
+            fontSize: '14px',
+            border: `1px solid ${isActive ? '#ffeaa7' : '#bee5eb'}`,
+          }}
+        >
           <strong>Estado:</strong> {result}
         </div>
       )}
@@ -269,7 +284,7 @@ const FunctionalMeasurementTools: React.FC<{onClose: () => void}> = ({ onClose }
 };
 
 // Herramientas de selecciÃ³n FUNCIONALES
-const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) => {
+const FunctionalSelectionTools: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { map } = useMap();
   const { layers } = useLayers();
   const [mode, setMode] = useState('');
@@ -297,23 +312,23 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
 
     const onMapClick = (e: L.LeafletMouseEvent) => {
       console.log('Clic en:', e.latlng);
-      
+
       // Buscar features en las capas cargadas
       const clickedFeatures: any[] = [];
-      
+
       layers.forEach(layer => {
         if (layer.data?.features) {
           layer.data.features.forEach((feature: any) => {
             if (feature.geometry.type === 'Point') {
               const [lng, lat] = feature.geometry.coordinates;
               const distance = e.latlng.distanceTo([lat, lng]);
-              
+
               // Si estÃ¡ cerca del clic (dentro de 100 metros)
               if (distance < 100) {
                 clickedFeatures.push({
                   ...feature,
                   layerName: layer.name,
-                  distance: distance
+                  distance: distance,
                 });
               }
             }
@@ -329,23 +344,27 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
           color: '#ff8800',
           weight: 3,
           opacity: 1,
-          fillOpacity: 0.7
+          fillOpacity: 0.7,
         }).bindPopup(`
           <div style="color: #333;">
             <h4 style="color: #ff8800;">ðŸŽ¯ Elementos Seleccionados</h4>
-            ${clickedFeatures.map(f => `
+            ${clickedFeatures
+              .map(
+                f => `
               <div style="margin: 5px 0; padding: 5px; background: #f9f9f9; border-radius: 3px;">
                 <strong>${f.properties.name || 'Sin nombre'}</strong><br/>
                 <small>Capa: ${f.layerName}</small><br/>
                 <small>Distancia: ${f.distance.toFixed(1)}m</small>
               </div>
-            `).join('')}
+            `
+              )
+              .join('')}
           </div>
         `);
-        
+
         selectionLayerRef.current?.addLayer(selectionMarker);
         setSelectedFeatures(prev => [...prev, ...clickedFeatures]);
-        
+
         selectionMarker.openPopup();
       }
     };
@@ -370,7 +389,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
 
     // Crear capa para selecciÃ³n rectangular
     selectionLayerRef.current = L.layerGroup().addTo(map);
-    
+
     let startPoint: L.LatLng | null = null;
     let selectionRect: L.Rectangle | null = null;
 
@@ -380,27 +399,27 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
 
     const onMouseMove = (e: L.LeafletMouseEvent) => {
       if (!startPoint) return;
-      
+
       if (selectionRect) {
         selectionLayerRef.current?.removeLayer(selectionRect);
       }
-      
+
       const bounds = L.latLngBounds(startPoint, e.latlng);
       selectionRect = L.rectangle(bounds, {
         color: '#ff8800',
         weight: 2,
-        fillOpacity: 0.1
+        fillOpacity: 0.1,
       });
-      
+
       selectionLayerRef.current?.addLayer(selectionRect);
     };
 
     const onMouseUp = (e: L.LeafletMouseEvent) => {
       if (!startPoint) return;
-      
+
       const bounds = L.latLngBounds(startPoint, e.latlng);
       const selectedFeatures: any[] = [];
-      
+
       // Buscar features dentro del rectÃ¡ngulo
       layers.forEach(layer => {
         if (layer.data?.features) {
@@ -410,7 +429,7 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
               if (bounds.contains([lat, lng])) {
                 selectedFeatures.push({
                   ...feature,
-                  layerName: layer.name
+                  layerName: layer.name,
                 });
               }
             }
@@ -420,27 +439,34 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
 
       if (selectedFeatures.length > 0) {
         setSelectedFeatures(selectedFeatures);
-        
+
         // Mostrar popup con resultados
         const popup = L.popup({
-          maxWidth: 300
+          maxWidth: 300,
         })
-        .setLatLng(bounds.getCenter())
-        .setContent(`
+          .setLatLng(bounds.getCenter())
+          .setContent(
+            `
           <div style="color: #333;">
             <h4 style="color: #ff8800;">ðŸŽ¯ SelecciÃ³n Rectangular</h4>
             <p><strong>${selectedFeatures.length} elementos seleccionados</strong></p>
-            ${selectedFeatures.slice(0, 3).map(f => `
+            ${selectedFeatures
+              .slice(0, 3)
+              .map(
+                f => `
               <div style="margin: 3px 0; font-size: 12px;">
                 â€¢ ${f.properties.name || 'Sin nombre'} (${f.layerName})
               </div>
-            `).join('')}
+            `
+              )
+              .join('')}
             ${selectedFeatures.length > 3 ? '<div style="font-size: 12px; color: #666;">... y mÃ¡s</div>' : ''}
           </div>
-        `)
-        .openOn(map);
+        `
+          )
+          .openOn(map);
       }
-      
+
       // Cleanup
       map.off('mousedown', onMouseDown);
       map.off('mousemove', onMouseMove);
@@ -454,91 +480,108 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
   };
 
   return (
-    <div style={{
-      position: 'absolute',
-      top: '20px',
-      right: '20px',
-      background: 'white',
-      padding: '15px',
-      borderRadius: '8px',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-      zIndex: 500,
-      minWidth: '280px',
-      color: '#ecf011'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+    <div
+      style={{
+        position: 'absolute',
+        top: '20px',
+        right: '20px',
+        background: 'white',
+        padding: '15px',
+        borderRadius: '8px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+        zIndex: 500,
+        minWidth: '280px',
+        color: '#ecf011',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '15px',
+        }}
+      >
         <h4 style={{ margin: 0, color: '#333' }}>🎯 Herramientas de Selección</h4>
-        <button onClick={() => {
-          clearSelections();
-          onClose();
-        }} style={{ 
-          background: 'none', 
-          border: 'none', 
-          cursor: 'pointer', 
-          fontSize: '18px',
-          color: '#666'
-        }}>X</button>
+        <button
+          onClick={() => {
+            clearSelections();
+            onClose();
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '18px',
+            color: '#666',
+          }}
+        >
+          X
+        </button>
       </div>
-      
+
       <div style={{ marginBottom: '15px' }}>
-        <button 
+        <button
           onClick={handleClickSelection}
           disabled={isActive && mode !== 'clic'}
-          style={{ 
-            margin: '5px', 
-            padding: '10px 15px', 
-            border: '1px solid #28a745', 
-            borderRadius: '4px', 
+          style={{
+            margin: '5px',
+            padding: '10px 15px',
+            border: '1px solid #28a745',
+            borderRadius: '4px',
             cursor: 'pointer',
-            backgroundColor: (isActive && mode === 'clic') ? '#28a745' : 'white',
-            color: (isActive && mode === 'clic') ? 'white' : '#28a745',
-            opacity: (isActive && mode !== 'clic') ? 0.5 : 1
+            backgroundColor: isActive && mode === 'clic' ? '#28a745' : 'white',
+            color: isActive && mode === 'clic' ? 'white' : '#28a745',
+            opacity: isActive && mode !== 'clic' ? 0.5 : 1,
           }}
         >
           Seleccionar por Click
         </button>
-        <button 
+        <button
           onClick={handleRectSelection}
           disabled={isActive && mode !== 'rectangular'}
-          style={{ 
-            margin: '5px', 
-            padding: '10px 15px', 
-            border: '1px solid #28a745', 
-            borderRadius: '4px', 
+          style={{
+            margin: '5px',
+            padding: '10px 15px',
+            border: '1px solid #28a745',
+            borderRadius: '4px',
             cursor: 'pointer',
-            backgroundColor: (isActive && mode === 'rectangular') ? '#28a745' : 'white',
-            color: (isActive && mode === 'rectangular') ? 'white' : '#28a745',
-            opacity: (isActive && mode !== 'rectangular') ? 0.5 : 1
+            backgroundColor: isActive && mode === 'rectangular' ? '#28a745' : 'white',
+            color: isActive && mode === 'rectangular' ? 'white' : '#28a745',
+            opacity: isActive && mode !== 'rectangular' ? 0.5 : 1,
           }}
         >
           Seleccion Rectangular
         </button>
-        <button 
+        <button
           onClick={clearSelections}
-          style={{ 
-            margin: '5px', 
-            padding: '10px 15px', 
-            border: '1px solid #dc3545', 
-            borderRadius: '4px', 
+          style={{
+            margin: '5px',
+            padding: '10px 15px',
+            border: '1px solid #dc3545',
+            borderRadius: '4px',
             cursor: 'pointer',
             backgroundColor: 'white',
-            color: '#dc3545'
+            color: '#dc3545',
           }}
         >
           Limpiar Seleccion
         </button>
       </div>
-      
+
       {selectedFeatures.length > 0 && (
-        <div style={{
-          padding: '10px',
-          backgroundColor: '#fff3cd',
-          borderRadius: '4px',
-          color: '#333',
-          fontSize: '14px',
-          border: '1px solid #ffeaa7'
-        }}>
-          <strong>âœ… Seleccionados:</strong> {selectedFeatures.length} elementos<br/>
+        <div
+          style={{
+            padding: '10px',
+            backgroundColor: '#fff3cd',
+            borderRadius: '4px',
+            color: '#333',
+            fontSize: '14px',
+            border: '1px solid #ffeaa7',
+          }}
+        >
+          <strong>âœ… Seleccionados:</strong> {selectedFeatures.length} elementos
+          <br />
           {isActive && <small>ðŸ”„ Modo activo: {mode}</small>}
         </div>
       )}
@@ -547,47 +590,51 @@ const FunctionalSelectionTools: React.FC<{onClose: () => void}> = ({ onClose }) 
 };
 
 // Panel de bookmarks/vistas FUNCIONAL
-const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) => {
+const FunctionalBookmarksPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { map } = useMap();
-  const [bookmarks, setBookmarks] = useState<Array<{
-    id: string;
-    name: string;
-    center: [number, number];
-    zoom: number;
-    timestamp: string;
-  }>>([]);
+  const [bookmarks, setBookmarks] = useState<
+    Array<{
+      id: string;
+      name: string;
+      center: [number, number];
+      zoom: number;
+      timestamp: string;
+    }>
+  >([]);
 
   const saveCurrentView = () => {
     if (!map) return;
-    
+
     const center = map.getCenter();
     const zoom = map.getZoom();
     const timestamp = new Date().toLocaleString('es-ES');
-    
+
     const newBookmark = {
       id: `bookmark_${Date.now()}`,
       name: `Vista ${bookmarks.length + 1}`,
       center: [center.lat, center.lng] as [number, number],
       zoom: zoom,
-      timestamp: timestamp
+      timestamp: timestamp,
     };
 
     setBookmarks(prev => [...prev, newBookmark]);
-    
+
     // Mostrar confirmaciÃ³n temporal
     const popup = L.popup({
       closeButton: false,
       autoClose: true,
-      autoPan: false
+      autoPan: false,
     })
-    .setLatLng(center)
-    .setContent(`
+      .setLatLng(center)
+      .setContent(
+        `
       <div style="color: #333; text-align: center;">
         <strong>âœ… Vista guardada</strong><br/>
         <small>${timestamp}</small>
       </div>
-    `)
-    .openOn(map);
+    `
+      )
+      .openOn(map);
 
     setTimeout(() => {
       map.closePopup(popup);
@@ -596,10 +643,10 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
 
   const goToBookmark = (bookmark: any) => {
     if (!map) return;
-    
+
     map.setView(bookmark.center, bookmark.zoom, {
       animate: true,
-      duration: 1.5
+      duration: 1.5,
     });
 
     // Mostrar popup en la vista restaurada
@@ -607,16 +654,18 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
       L.popup({
         closeButton: false,
         autoClose: true,
-        autoPan: false
+        autoPan: false,
       })
-      .setLatLng(bookmark.center)
-      .setContent(`
+        .setLatLng(bookmark.center)
+        .setContent(
+          `
         <div style="color: #333; text-align: center;">
           <strong>ðŸ“Œ ${bookmark.name}</strong><br/>
           <small>Guardado: ${bookmark.timestamp}</small>
         </div>
-      `)
-      .openOn(map);
+      `
+        )
+        .openOn(map);
     }, 1500);
   };
 
@@ -629,103 +678,125 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
   const renameBookmark = (id: string) => {
     const bookmark = bookmarks.find(b => b.id === id);
     if (!bookmark) return;
-    
+
     const newName = prompt('Nuevo nombre para la vista:', bookmark.name);
     if (newName && newName.trim()) {
-      setBookmarks(prev => prev.map(b => 
-        b.id === id ? { ...b, name: newName.trim() } : b
-      ));
+      setBookmarks(prev => prev.map(b => (b.id === id ? { ...b, name: newName.trim() } : b)));
     }
   };
 
   return (
-    <div style={{
-      position: 'absolute',
-      top: '20px',
-      right: '20px',
-      background: 'white',
-      padding: '15px',
-      borderRadius: '8px',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-      zIndex: 500,
-      minWidth: '320px',
-      maxHeight: '400px',
-      color: '#333',
-      overflowY: 'auto'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+    <div
+      style={{
+        position: 'absolute',
+        top: '20px',
+        right: '20px',
+        background: 'white',
+        padding: '15px',
+        borderRadius: '8px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+        zIndex: 500,
+        minWidth: '320px',
+        maxHeight: '400px',
+        color: '#333',
+        overflowY: 'auto',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '15px',
+        }}
+      >
         <h4 style={{ margin: 0, color: '#333' }}>📌 Vistas Guardadas</h4>
-        <button onClick={onClose} style={{ 
-          background: 'none', 
-          border: 'none', 
-          cursor: 'pointer', 
-          fontSize: '18px',
-          color: '#666'
-        }}>X</button>
+        <button
+          onClick={onClose}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '18px',
+            color: '#666',
+          }}
+        >
+          X
+        </button>
       </div>
-      
+
       <div style={{ marginBottom: '15px' }}>
-        <button 
+        <button
           onClick={saveCurrentView}
-          style={{ 
-            padding: '10px 15px', 
-            border: '1px solid #17a2b8', 
-            borderRadius: '4px', 
+          style={{
+            padding: '10px 15px',
+            border: '1px solid #17a2b8',
+            borderRadius: '4px',
             cursor: 'pointer',
             backgroundColor: '#17a2b8',
             color: 'white',
             width: '100%',
             marginBottom: '10px',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }}
         >
           Guardar Vista Actual
         </button>
       </div>
-      
+
       <div>
         {bookmarks.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
-            color: '#666', 
-            fontSize: '14px',
-            padding: '20px',
-            backgroundColor: '#f8f9fa',
-            borderRadius: '4px'
-          }}>
+          <div
+            style={{
+              textAlign: 'center',
+              color: '#666',
+              fontSize: '14px',
+              padding: '20px',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '4px',
+            }}
+          >
             <div style={{ fontSize: '24px', marginBottom: '8px' }}>ðŸ“</div>
             <p>No hay vistas guardadas</p>
             <small>Navega a una ubicaciÃ³n y guarda tu primera vista</small>
           </div>
         ) : (
           bookmarks.map((bookmark, index) => (
-            <div key={bookmark.id} style={{
-              padding: '10px',
-              border: '1px solid #e0e0e0',
-              borderRadius: '4px',
-              marginBottom: '8px',
-              backgroundColor: '#f9f9f9'
-            }}>
-              <div style={{ 
-                fontWeight: 'bold', 
-                color: '#333',
-                marginBottom: '4px',
-                cursor: 'pointer'
+            <div
+              key={bookmark.id}
+              style={{
+                padding: '10px',
+                border: '1px solid #e0e0e0',
+                borderRadius: '4px',
+                marginBottom: '8px',
+                backgroundColor: '#f9f9f9',
               }}
-              onClick={() => goToBookmark(bookmark)}
+            >
+              <div
+                style={{
+                  fontWeight: 'bold',
+                  color: '#333',
+                  marginBottom: '4px',
+                  cursor: 'pointer',
+                }}
+                onClick={() => goToBookmark(bookmark)}
               >
                 Ir {bookmark.name}
               </div>
-              <div style={{ 
-                fontSize: '11px', 
-                color: '#666',
-                marginBottom: '8px'
-              }}>
-                Fecha: {bookmark.timestamp}<br/>
-                Zoom: {bookmark.zoom.toFixed(1)}  Lat: {bookmark.center[0].toFixed(4)} Lon: {bookmark.center[1].toFixed(4)}
+              <div
+                style={{
+                  fontSize: '11px',
+                  color: '#666',
+                  marginBottom: '8px',
+                }}
+              >
+                Fecha: {bookmark.timestamp}
+                <br />
+                Zoom: {bookmark.zoom.toFixed(1)} Lat: {bookmark.center[0].toFixed(4)} Lon:{' '}
+                {bookmark.center[1].toFixed(4)}
               </div>
               <div style={{ display: 'flex', gap: '4px' }}>
-                <button 
+                <button
                   onClick={() => goToBookmark(bookmark)}
                   style={{
                     fontSize: '10px',
@@ -734,12 +805,12 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
                     borderRadius: '3px',
                     cursor: 'pointer',
                     backgroundColor: '#28a745',
-                    color: 'white'
+                    color: 'white',
                   }}
                 >
                   Ir
                 </button>
-                <button 
+                <button
                   onClick={() => renameBookmark(bookmark.id)}
                   style={{
                     fontSize: '10px',
@@ -748,12 +819,12 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
                     borderRadius: '3px',
                     cursor: 'pointer',
                     backgroundColor: '#17a2b8',
-                    color: 'white'
+                    color: 'white',
                   }}
                 >
                   Cambiar Nombre
                 </button>
-                <button 
+                <button
                   onClick={() => deleteBookmark(bookmark.id)}
                   style={{
                     fontSize: '10px',
@@ -762,7 +833,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
                     borderRadius: '3px',
                     cursor: 'pointer',
                     backgroundColor: '#dc3545',
-                    color: 'white'
+                    color: 'white',
                   }}
                 >
                   Eliminar
@@ -777,7 +848,7 @@ const FunctionalBookmarksPanel: React.FC<{onClose: () => void}> = ({ onClose }) 
 };
 
 // BÃºsqueda funcional
-const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => {
+const FunctionalSearchPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { map } = useMap();
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<string[]>([]);
@@ -787,7 +858,7 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
   const parseCoordinates = (input: string): [number, number] | null => {
     // Limpiar input
     const cleaned = input.replace(/[^\d.,\-\s]/g, '');
-    
+
     // Intentar varios formatos
     const patterns = [
       /^(-?\d+\.?\d*)[,\s]+(-?\d+\.?\d*)$/, // lat, lng o lat lng
@@ -799,7 +870,7 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
       if (match) {
         const num1 = parseFloat(match[1]);
         const num2 = parseFloat(match[2]);
-        
+
         // Determinar si es lat,lng o lng,lat basado en rangos tÃ­picos
         if (Math.abs(num1) <= 90 && Math.abs(num2) <= 180) {
           // Primer nÃºmero parece latitud
@@ -828,77 +899,85 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
     try {
       // Intentar parsear como coordenadas primero
       const coords = parseCoordinates(searchTerm);
-      
+
       if (coords) {
         const [lat, lng] = coords;
-        
+
         // Crear marcador en las coordenadas
         const searchIcon = L.icon({
-          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+          iconUrl:
+            'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+          shadowUrl:
+            'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
           iconSize: [25, 41],
           iconAnchor: [12, 41],
           popupAnchor: [1, -34],
-          shadowSize: [41, 41]
+          shadowSize: [41, 41],
         });
 
         searchMarkerRef.current = L.marker([lat, lng], { icon: searchIcon })
-          .bindPopup(`
+          .bindPopup(
+            `
             <div style="color: #333;">
               <h4 style="margin: 0 0 8px 0;">ðŸ“ Coordenadas encontradas</h4>
               <p style="margin: 0;"><strong>Latitud:</strong> ${lat.toFixed(6)}</p>
               <p style="margin: 0;"><strong>Longitud:</strong> ${lng.toFixed(6)}</p>
             </div>
-          `)
+          `
+          )
           .addTo(map);
 
         // Navegar a las coordenadas
         map.setView([lat, lng], 16);
         searchMarkerRef.current.openPopup();
-        
+
         setResults([`âœ… Coordenadas: ${lat.toFixed(6)}, ${lng.toFixed(6)}`]);
       } else {
         // Buscar como nombre de lugar usando Nominatim
         const response = await fetch(
           `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchTerm)}&limit=5&bounded=0&addressdetails=1`
         );
-        
+
         if (response.ok) {
           const data = await response.json();
-          
+
           if (data && data.length > 0) {
-            const searchResults = data.map((item: any) => 
-              `${item.display_name} (${parseFloat(item.lat).toFixed(4)}, ${parseFloat(item.lon).toFixed(4)})`
+            const searchResults = data.map(
+              (item: any) =>
+                `${item.display_name} (${parseFloat(item.lat).toFixed(4)}, ${parseFloat(item.lon).toFixed(4)})`
             );
             setResults(searchResults);
-            
+
             // Navegar al primer resultado
             const firstResult = data[0];
             const lat = parseFloat(firstResult.lat);
             const lng = parseFloat(firstResult.lon);
-            
+
             // Crear marcador
             const searchIcon = L.icon({
-              iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
-              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+              iconUrl:
+                'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+              shadowUrl:
+                'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
               iconSize: [25, 41],
               iconAnchor: [12, 41],
               popupAnchor: [1, -34],
-              shadowSize: [41, 41]
+              shadowSize: [41, 41],
             });
 
             searchMarkerRef.current = L.marker([lat, lng], { icon: searchIcon })
-              .bindPopup(`
+              .bindPopup(
+                `
                 <div style="color: #333;">
                   <h4 style="margin: 0 0 8px 0;">ðŸ” ${firstResult.display_name}</h4>
                   <p style="margin: 0; font-size: 12px;"><strong>Coordenadas:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}</p>
                 </div>
-              `)
+              `
+              )
               .addTo(map);
 
             map.setView([lat, lng], 14);
             searchMarkerRef.current.openPopup();
-            
           } else {
             setResults(['âŒ No se encontraron resultados']);
           }
@@ -916,14 +995,14 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
 
   const selectLocation = async (locationText: string) => {
     if (!map) return;
-    
+
     // Extraer coordenadas del texto del resultado
     const coordMatch = locationText.match(/\((-?\d+\.?\d*),\s*(-?\d+\.?\d*)\)/);
     if (coordMatch) {
       const lat = parseFloat(coordMatch[1]);
       const lng = parseFloat(coordMatch[2]);
       map.setView([lat, lng], 16);
-      
+
       if (searchMarkerRef.current) {
         searchMarkerRef.current.openPopup();
       }
@@ -931,75 +1010,89 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
   };
 
   return (
-    <div style={{
-      position: 'absolute',
-      top: '20px',
-      right: '20px',
-      background: 'white',
-      padding: '15px',
-      borderRadius: '8px',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-      zIndex: 500,
-      minWidth: '320px',
-      color: '#333'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+    <div
+      style={{
+        position: 'absolute',
+        top: '20px',
+        right: '20px',
+        background: 'white',
+        padding: '15px',
+        borderRadius: '8px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+        zIndex: 500,
+        minWidth: '320px',
+        color: '#333',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '15px',
+        }}
+      >
         <h4 style={{ margin: 0, color: '#333' }}>🔍 Búsqueda Geográfica</h4>
-        <button onClick={() => {
-          if (searchMarkerRef.current && map) {
-            map.removeLayer(searchMarkerRef.current);
-            searchMarkerRef.current = null;
-          }
-          onClose();
-        }} style={{ 
-          background: 'none', 
-          border: 'none', 
-          cursor: 'pointer', 
-          fontSize: '18px',
-          color: '#666'
-        }}>Ã—</button>
+        <button
+          onClick={() => {
+            if (searchMarkerRef.current && map) {
+              map.removeLayer(searchMarkerRef.current);
+              searchMarkerRef.current = null;
+            }
+            onClose();
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '18px',
+            color: '#666',
+          }}
+        >
+          Ã—
+        </button>
       </div>
-      
+
       <div style={{ marginBottom: '15px' }}>
-        <input 
-          type="text" 
+        <input
+          type="text"
           placeholder="Ej: -12.0464, -77.0428 o Centro de Lima"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-          style={{ 
-            width: '100%', 
-            padding: '10px', 
-            border: '1px solid #ccc', 
+          onChange={e => setSearchTerm(e.target.value)}
+          onKeyPress={e => e.key === 'Enter' && handleSearch()}
+          style={{
+            width: '100%',
+            padding: '10px',
+            border: '1px solid #ccc',
             borderRadius: '4px',
             marginBottom: '10px',
             boxSizing: 'border-box',
-            color: '#333'
+            color: '#333',
           }}
         />
-        <button 
+        <button
           onClick={handleSearch}
           disabled={loading || !searchTerm.trim()}
-          style={{ 
-            padding: '10px 15px', 
-            border: 'none', 
-            borderRadius: '4px', 
+          style={{
+            padding: '10px 15px',
+            border: 'none',
+            borderRadius: '4px',
             cursor: 'pointer',
             backgroundColor: loading ? '#ccc' : '#ffc107',
             color: '#333',
             width: '100%',
-            opacity: loading || !searchTerm.trim() ? 0.6 : 1
+            opacity: loading || !searchTerm.trim() ? 0.6 : 1,
           }}
         >
           {loading ? 'ðŸ”„ Buscando...' : 'ðŸ” Buscar'}
         </button>
       </div>
-      
+
       {results.length > 0 && (
         <div>
           <h5 style={{ margin: '0 0 10px 0', color: '#333' }}>Resultados:</h5>
           {results.map((result, index) => (
-            <div 
+            <div
               key={index}
               onClick={() => selectLocation(result)}
               style={{
@@ -1007,10 +1100,14 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
                 border: '1px solid #e0e0e0',
                 borderRadius: '4px',
                 marginBottom: '5px',
-                cursor: result.startsWith('âœ…') ? 'pointer' : result.startsWith('âŒ') ? 'default' : 'pointer',
+                cursor: result.startsWith('âœ…')
+                  ? 'pointer'
+                  : result.startsWith('âŒ')
+                    ? 'default'
+                    : 'pointer',
                 color: '#333',
                 backgroundColor: result.startsWith('âŒ') ? '#f8d7da' : '#f8f9fa',
-                fontSize: '13px'
+                fontSize: '13px',
               }}
             >
               {result}
@@ -1018,55 +1115,69 @@ const FunctionalSearchPanel: React.FC<{onClose: () => void}> = ({ onClose }) => 
           ))}
         </div>
       )}
-      
-      <div style={{
-        marginTop: '15px',
-        padding: '10px',
-        backgroundColor: '#e7f3ff',
-        borderRadius: '4px',
-        fontSize: '12px',
-        color: '#333'
-      }}>
-        <strong>ðŸ’¡ Ejemplos de bÃºsqueda:</strong><br/>
-        â€¢ <strong>Coordenadas:</strong> -12.0464, -77.0428<br/>
-        â€¢ <strong>Lugares:</strong> Plaza de Armas Lima<br/>
+
+      <div
+        style={{
+          marginTop: '15px',
+          padding: '10px',
+          backgroundColor: '#e7f3ff',
+          borderRadius: '4px',
+          fontSize: '12px',
+          color: '#333',
+        }}
+      >
+        <strong>ðŸ’¡ Ejemplos de bÃºsqueda:</strong>
+        <br />
+        â€¢ <strong>Coordenadas:</strong> -12.0464, -77.0428
+        <br />
+        â€¢ <strong>Lugares:</strong> Plaza de Armas Lima
+        <br />
         â€¢ <strong>Direcciones:</strong> Av. Larco Miraflores
       </div>
     </div>
   );
 };
 
-const SimpleAttributeTable: React.FC<{onClose: () => void}> = ({ onClose }) => (
-  <div style={{
-    position: 'absolute',
-    bottom: 0,
-    left: '320px',
-    right: 0,
-    height: '300px',
-    background: 'white',
-    borderTop: '2px solid #e0e0e0',
-    boxShadow: '0 -2px 8px rgba(0,0,0,0.1)',
-    zIndex: 500,
-    display: 'flex',
-    flexDirection: 'column',
-    color: '#333'
-  }}>
-    <div style={{ 
-      padding: '10px 15px', 
-      borderBottom: '1px solid #e0e0e0',
+const SimpleAttributeTable: React.FC<{ onClose: () => void }> = ({ onClose }) => (
+  <div
+    style={{
+      position: 'absolute',
+      bottom: 0,
+      left: '320px',
+      right: 0,
+      height: '300px',
+      background: 'white',
+      borderTop: '2px solid #e0e0e0',
+      boxShadow: '0 -2px 8px rgba(0,0,0,0.1)',
+      zIndex: 500,
       display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      background: '#f5f5f5'
-    }}>
+      flexDirection: 'column',
+      color: '#333',
+    }}
+  >
+    <div
+      style={{
+        padding: '10px 15px',
+        borderBottom: '1px solid #e0e0e0',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        background: '#f5f5f5',
+      }}
+    >
       <h4 style={{ margin: 0, color: '#333' }}>Tabla de Atributos</h4>
-      <button onClick={onClose} style={{ 
-        background: 'none', 
-        border: 'none', 
-        cursor: 'pointer', 
-        fontSize: '18px',
-        color: '#666'
-      }}>X</button>
+      <button
+        onClick={onClose}
+        style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '18px',
+          color: '#666',
+        }}
+      >
+        X
+      </button>
     </div>
     <div style={{ flex: 1, padding: '15px', color: '#333' }}>
       <p style={{ color: '#666' }}>No hay capas seleccionadas para mostrar atributos.</p>
@@ -1090,54 +1201,60 @@ const MainLayout: React.FC = () => {
   };
 
   return (
-    <div style={{
-      width: '100%',
-      height: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      overflow: 'hidden',
-      backgroundColor: '#f5f5f5'
-    }}>
-      <Navbar 
+    <div
+      style={{
+        width: '100%',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        backgroundColor: '#f5f5f5',
+      }}
+    >
+      <Navbar
         activeTool={activeTool}
         onToolChange={handleToolChange}
         showAttributeTable={showAttributeTable}
       />
-      
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        overflow: 'hidden',
-        position: 'relative'
-      }}>
-        <LayerPanel />
-        
-        <div style={{
+
+      <div
+        style={{
           flex: 1,
-          position: 'relative',
           display: 'flex',
-          flexDirection: 'column'
-        }}>
+          overflow: 'hidden',
+          position: 'relative',
+        }}
+      >
+        <LayerPanel />
+
+        <div
+          style={{
+            flex: 1,
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <MapContainer />
-          
+
           {/* Herramientas flotantes segÃºn tool activo */}
           {activeTool === 'measurement' && (
             <FunctionalMeasurementTools onClose={() => setActiveTool('none')} />
           )}
-          
+
           {activeTool === 'selection' && (
             <FunctionalSelectionTools onClose={() => setActiveTool('none')} />
           )}
-          
+
           {activeTool === 'bookmarks' && (
             <FunctionalBookmarksPanel onClose={() => setActiveTool('none')} />
           )}
-          
+
           {activeTool === 'search' && (
             <FunctionalSearchPanel onClose={() => setActiveTool('none')} />
           )}
         </div>
-        
+
         {/* Tabla de atributos en la parte inferior */}
         {showAttributeTable && (
           <SimpleAttributeTable onClose={() => setShowAttributeTable(false)} />
@@ -1152,7 +1269,7 @@ function App() {
     <MapProvider>
       <LayerProvider>
         <SelectionProvider>
-                    <ChatBridge />
+          <ChatBridge />
           <MainLayout />
         </SelectionProvider>
       </LayerProvider>
@@ -1161,5 +1278,3 @@ function App() {
 }
 
 export default App;
-
-

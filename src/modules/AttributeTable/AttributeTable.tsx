@@ -20,7 +20,7 @@ export const AttributeTable: React.FC<AttributeTableProps> = ({ onClose }) => {
 
   const features = useMemo(() => {
     if (!activeLayer?.data?.features) return [];
-    
+
     let filtered = activeLayer.data.features;
 
     // Filtrar por búsqueda
@@ -37,7 +37,7 @@ export const AttributeTable: React.FC<AttributeTableProps> = ({ onClose }) => {
       filtered = [...filtered].sort((a, b) => {
         const aVal = a.properties[sortField];
         const bVal = b.properties[sortField];
-        
+
         if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
         if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
         return 0;
@@ -64,20 +64,20 @@ export const AttributeTable: React.FC<AttributeTableProps> = ({ onClose }) => {
   const handleRowSelect = (feature: GeoJSONFeature) => {
     const id = feature.id || JSON.stringify(feature.geometry);
     const newSelected = new Set(selectedRows);
-    
+
     if (newSelected.has(id)) {
       newSelected.delete(id);
     } else {
       newSelected.add(id);
     }
-    
+
     setSelectedRows(newSelected);
 
     // Actualizar selección en el contexto
     if (activeLayerId) {
       clearSelection(activeLayerId);
       if (newSelected.size > 0) {
-        const selectedFeatures = features.filter(f => 
+        const selectedFeatures = features.filter(f =>
           newSelected.has(f.id || JSON.stringify(f.geometry))
         );
         addSelection(activeLayerId, selectedFeatures);
@@ -90,9 +90,7 @@ export const AttributeTable: React.FC<AttributeTableProps> = ({ onClose }) => {
       setSelectedRows(new Set());
       if (activeLayerId) clearSelection(activeLayerId);
     } else {
-      const allIds = new Set(features.map(f => 
-        f.id || JSON.stringify(f.geometry)
-      ));
+      const allIds = new Set(features.map(f => f.id || JSON.stringify(f.geometry)));
       setSelectedRows(allIds);
       if (activeLayerId) {
         clearSelection(activeLayerId);
@@ -106,7 +104,9 @@ export const AttributeTable: React.FC<AttributeTableProps> = ({ onClose }) => {
       <div className="attribute-table">
         <div className="table-header">
           <h3>Tabla de Atributos</h3>
-          <button className="btn-close" onClick={onClose}>✕</button>
+          <button className="btn-close" onClick={onClose}>
+            ✕
+          </button>
         </div>
         <div className="table-empty">
           <p>No hay capa activa seleccionada</p>
@@ -127,23 +127,19 @@ export const AttributeTable: React.FC<AttributeTableProps> = ({ onClose }) => {
             {features.length} registros
           </span>
         </div>
-        
+
         <div className="table-actions">
           <input
             type="text"
             placeholder="Buscar..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="table-search"
           />
-          <button 
-            className="btn-icon"
-            onClick={handleSelectAll}
-            title="Seleccionar todo"
-          >
+          <button className="btn-icon" onClick={handleSelectAll} title="Seleccionar todo">
             ☑️
           </button>
-          <button 
+          <button
             className="btn-icon"
             onClick={() => {
               setSelectedRows(new Set());
@@ -154,7 +150,9 @@ export const AttributeTable: React.FC<AttributeTableProps> = ({ onClose }) => {
           >
             🗑️
           </button>
-          <button className="btn-close" onClick={onClose}>✕</button>
+          <button className="btn-close" onClick={onClose}>
+            ✕
+          </button>
         </div>
       </div>
 
@@ -171,16 +169,10 @@ export const AttributeTable: React.FC<AttributeTableProps> = ({ onClose }) => {
                 />
               </th>
               {fields.map(field => (
-                <th 
-                  key={field}
-                  onClick={() => handleSort(field)}
-                  className="sortable"
-                >
+                <th key={field} onClick={() => handleSort(field)} className="sortable">
                   {field}
                   {sortField === field && (
-                    <span className="sort-icon">
-                      {sortOrder === 'asc' ? '▲' : '▼'}
-                    </span>
+                    <span className="sort-icon">{sortOrder === 'asc' ? '▲' : '▼'}</span>
                   )}
                 </th>
               ))}
@@ -190,24 +182,18 @@ export const AttributeTable: React.FC<AttributeTableProps> = ({ onClose }) => {
             {features.map((feature, index) => {
               const id = feature.id || JSON.stringify(feature.geometry);
               const isSelected = selectedRows.has(id);
-              
+
               return (
-                <tr 
+                <tr
                   key={index}
                   className={isSelected ? 'selected' : ''}
                   onClick={() => handleRowSelect(feature)}
                 >
                   <td className="col-select">
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => {}}
-                    />
+                    <input type="checkbox" checked={isSelected} onChange={() => {}} />
                   </td>
                   {fields.map(field => (
-                    <td key={field}>
-                      {String(feature.properties[field] ?? '')}
-                    </td>
+                    <td key={field}>{String(feature.properties[field] ?? '')}</td>
                   ))}
                 </tr>
               );

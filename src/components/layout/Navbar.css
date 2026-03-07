@@ -218,7 +218,7 @@
   .tool-label {
     display: none;
   }
-  
+
   .navbar-tool {
     min-width: 50px;
     padding: 8px;
@@ -229,11 +229,11 @@
   .navbar-title {
     display: none;
   }
-  
+
   .navbar-tools {
     gap: 4px;
   }
-  
+
   .zoom-indicator {
     display: none;
   }

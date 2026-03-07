@@ -15,7 +15,7 @@ export class LayerService {
 
     const response = await fetch(`${API_BASE_URL}/layers/upload`, {
       method: 'POST',
-      body: formData
+      body: formData,
     });
 
     if (!response.ok) {
@@ -32,9 +32,9 @@ export class LayerService {
     const response = await fetch(`${API_BASE_URL}/layers/service`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config)
+      body: JSON.stringify(config),
     });
 
     if (!response.ok) {
@@ -49,7 +49,7 @@ export class LayerService {
    */
   static async loadGeoJSON(url: string): Promise<GeoJSONFeatureCollection> {
     const response = await fetch(url);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to load GeoJSON: ${response.statusText}`);
     }
@@ -64,9 +64,9 @@ export class LayerService {
     const response = await fetch(`${API_BASE_URL}/layers`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(layer)
+      body: JSON.stringify(layer),
     });
 
     if (!response.ok) {
@@ -80,8 +80,8 @@ export class LayerService {
    * Obtiene todas las capas guardadas
    */
   static async getLayers(): Promise<Layer[]> {
-    const response = await fetch(`${API_BASE_URL}/layers`);
-    
+    const response = await fetch(`${API_BASE_URL}/getlayers`);
+
     if (!response.ok) {
       throw new Error(`Failed to get layers: ${response.statusText}`);
     }
@@ -94,7 +94,7 @@ export class LayerService {
    */
   static async deleteLayer(layerId: string): Promise<void> {
     const response = await fetch(`${API_BASE_URL}/layers/${layerId}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     });
 
     if (!response.ok) {
@@ -109,9 +109,9 @@ export class LayerService {
     const response = await fetch(`${API_BASE_URL}/spatial/query`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(params)
+      body: JSON.stringify(params),
     });
 
     if (!response.ok) {

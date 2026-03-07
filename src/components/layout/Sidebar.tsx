@@ -15,13 +15,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpen = true,
   onToggle,
   position = 'left',
-  width = 'w-80'
+  width = 'w-80',
 }) => {
   const [internalOpen, setInternalOpen] = useState(isOpen);
-  
+
   const isControlled = onToggle !== undefined;
   const isOpenState = isControlled ? isOpen : internalOpen;
-  
+
   const handleToggle = () => {
     if (isControlled) {
       onToggle(!isOpen);
@@ -30,13 +30,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  const positionClasses = position === 'left' 
-    ? 'left-0' 
-    : 'right-0';
-  
-  const transformClasses = position === 'left'
-    ? isOpenState ? 'translate-x-0' : '-translate-x-full'
-    : isOpenState ? 'translate-x-0' : 'translate-x-full';
+  const positionClasses = position === 'left' ? 'left-0' : 'right-0';
+
+  const transformClasses =
+    position === 'left'
+      ? isOpenState
+        ? 'translate-x-0'
+        : '-translate-x-full'
+      : isOpenState
+        ? 'translate-x-0'
+        : 'translate-x-full';
 
   return (
     <>
@@ -47,7 +50,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           onClick={handleToggle}
         />
       )}
-      
+
       {/* Sidebar */}
       <div
         className={`
@@ -68,13 +71,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-xl">×</span>
           </button>
         </div>
-        
+
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4">
-          {children}
-        </div>
+        <div className="flex-1 overflow-y-auto p-4">{children}</div>
       </div>
-      
+
       {/* Toggle button cuando está cerrado */}
       {!isOpenState && (
         <button

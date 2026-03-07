@@ -27,12 +27,19 @@ export const MapComponentExample: React.FC = () => {
                   type: 'Feature',
                   geometry: {
                     type: 'Polygon',
-                    coordinates: [[[-77.0428, -12.0464], [-77.0328, -12.0364], [-77.0228, -12.0464], [-77.0428, -12.0464]]]
+                    coordinates: [
+                      [
+                        [-77.0428, -12.0464],
+                        [-77.0328, -12.0364],
+                        [-77.0228, -12.0464],
+                        [-77.0428, -12.0464],
+                      ],
+                    ],
                   },
-                  properties: { name: 'Lima', id: 1 }
-                }
-              ]
-            }
+                  properties: { name: 'Lima', id: 1 },
+                },
+              ],
+            },
           },
           {
             id: 'carreteras',
@@ -48,12 +55,15 @@ export const MapComponentExample: React.FC = () => {
                   type: 'Feature',
                   geometry: {
                     type: 'LineString',
-                    coordinates: [[-77.0428, -12.0464], [-77.0328, -12.0364]]
+                    coordinates: [
+                      [-77.0428, -12.0464],
+                      [-77.0328, -12.0364],
+                    ],
                   },
-                  properties: { name: 'Panamericana Norte', id: 1 }
-                }
-              ]
-            }
+                  properties: { name: 'Panamericana Norte', id: 1 },
+                },
+              ],
+            },
           },
           {
             id: 'ciudades',
@@ -69,18 +79,18 @@ export const MapComponentExample: React.FC = () => {
                   type: 'Feature',
                   geometry: {
                     type: 'Point',
-                    coordinates: [-77.0428, -12.0464]
+                    coordinates: [-77.0428, -12.0464],
                   },
-                  properties: { name: 'Lima', population: 9000000 }
-                }
-              ]
-            }
-          }
+                  properties: { name: 'Lima', population: 9000000 },
+                },
+              ],
+            },
+          },
         ];
-        
+
         // Agregar capas al contexto
         exampleLayers.forEach(layer => addLayer(layer));
-        
+
         console.log(' Capas de ejemplo cargadas desde GeoServer');
       } catch (error) {
         console.error(' Error cargando capas:', error);
@@ -95,8 +105,8 @@ export const MapComponentExample: React.FC = () => {
     id: layer.id,
     name: layer.name,
     visible: layer.visible,
-    type: layer.type === 'geojson' ? 'vector' : (layer.type === 'wms' ? 'wms' : 'base'),
-    geometryType: layer.data?.features[0]?.geometry?.type as any
+    type: layer.type === 'geojson' ? 'vector' : layer.type === 'wms' ? 'wms' : 'base',
+    geometryType: layer.data?.features[0]?.geometry?.type as any,
   }));
 
   const handleLayerToggle = (layerId: string, visible: boolean) => {
@@ -111,7 +121,7 @@ export const MapComponentExample: React.FC = () => {
         onLayerToggle={handleLayerToggle}
         className="absolute top-4 right-4 z-10 max-w-xs"
       />
-      
+
       {/* Aquí iría tu componente de mapa real (Leaflet, OpenLayers, etc.) */}
       <div className="w-full h-full bg-gray-100 flex items-center justify-center">
         <p className="text-gray-500">Componente de Mapa</p>

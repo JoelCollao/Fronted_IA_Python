@@ -24,7 +24,7 @@ const initialState: MapState = {
   zoom: 10,
   mousePosition: null,
   isLoading: false,
-  selectedFeature: null
+  selectedFeature: null,
 };
 
 export const useMapState = (): UseMapStateReturn => {
@@ -61,6 +61,6 @@ export const useMapState = (): UseMapStateReturn => {
     updateMousePosition,
     setLoading,
     setSelectedFeature,
-    resetMapState
+    resetMapState,
   };
 };

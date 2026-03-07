@@ -3,7 +3,13 @@
 /**
  * Tipos de geometría soportados
  */
-export type GeometryType = 'Point' | 'LineString' | 'Polygon' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
+export type GeometryType =
+  | 'Point'
+  | 'LineString'
+  | 'Polygon'
+  | 'MultiPoint'
+  | 'MultiLineString'
+  | 'MultiPolygon';
 
 /**
  * Tipos de capas soportados
@@ -71,10 +77,10 @@ export interface Layer {
   visible: boolean;
   opacity: number;
   zIndex: number;
-  geometryType?: GeometryType;  //  Tipo de geometría predominante
+  geometryType?: GeometryType; //  Tipo de geometría predominante
   data?: GeoJSONFeatureCollection;
-  leafletLayer?: any;  //  Referencia a la capa de Leaflet
-  markers?: any[];  //  Referencias a marcadores individuales
+  leafletLayer?: any; //  Referencia a la capa de Leaflet
+  markers?: any[]; //  Referencias a marcadores individuales
   url?: string;
   style?: LayerStyle;
   metadata?: LayerMetadata;
@@ -214,7 +220,3 @@ export interface Coordinates {
   lng: number;
   lat: number;
 }
-
-
-
-

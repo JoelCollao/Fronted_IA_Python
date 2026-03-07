@@ -1,9 +1,0 @@
-# name: AplicacionGIS
-# on:
-#     push:
-#         branches: ["main"]
-# jobs:
-#     gis:
-#         runs-on: ubuntu-latest
-#         steps:
-#             - run: npm run lint

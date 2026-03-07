@@ -13,9 +13,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry }) 
           <span className="text-red-400">⚠️</span>
         </div>
         <div className="ml-3">
-          <h3 className="text-sm font-medium text-red-800">
-            Error
-          </h3>
+          <h3 className="text-sm font-medium text-red-800">Error</h3>
           <div className="mt-2 text-sm text-red-700">
             <p>{message}</p>
           </div>

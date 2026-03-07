@@ -29,19 +29,21 @@ export const MapContainer: React.FC<MapContainerProps> = ({ className, style }) 
     const map = L.map(mapRef.current, {
       center: mapState.center as [number, number],
       zoom: mapState.zoom,
-      zoomControl: false // Lo añadiremos en una posición personalizada
+      zoomControl: false, // Lo añadiremos en una posición personalizada
     });
 
     // Añadir capa base
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
-      maxZoom: 19
+      maxZoom: 19,
     }).addTo(map);
 
     // Añadir control de zoom personalizado
-    L.control.zoom({
-      position: 'bottomright'
-    }).addTo(map);
+    L.control
+      .zoom({
+        position: 'bottomright',
+      })
+      .addTo(map);
 
     // Guardar referencia del mapa
     mapInstanceRef.current = map;
@@ -53,7 +55,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({ className, style }) 
       const zoom = map.getZoom();
       updateMapState({
         center: [center.lat, center.lng],
-        zoom: zoom
+        zoom: zoom,
       });
     });
 

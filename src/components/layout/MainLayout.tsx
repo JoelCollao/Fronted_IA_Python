@@ -9,7 +9,7 @@ import { BookmarksPanel } from '../../modules/Bookmarks/BookmarksPanel';
 import { SearchPanel } from '../../modules/Search/SearchPanel';
 import './MainLayout.css';
 
-export type ActiveTool = 
+export type ActiveTool =
   | 'none'
   | 'measurement'
   | 'selection'
@@ -28,7 +28,7 @@ export const MainLayout: React.FC = () => {
       setShowAttributeTable(!showAttributeTable);
       return;
     }
-    
+
     // Para otras herramientas, toggle normal
     setActiveTool(activeTool === tool ? 'none' : tool);
   };
@@ -36,7 +36,7 @@ export const MainLayout: React.FC = () => {
   return (
     <div className="main-layout">
       {/* Navbar Superior */}
-      <Navbar 
+      <Navbar
         activeTool={activeTool}
         onToolChange={handleToolChange}
         showAttributeTable={showAttributeTable}
@@ -57,17 +57,11 @@ export const MainLayout: React.FC = () => {
             <MeasurementTools onClose={() => setActiveTool('none')} />
           )}
 
-          {activeTool === 'selection' && (
-            <SelectionTools onClose={() => setActiveTool('none')} />
-          )}
+          {activeTool === 'selection' && <SelectionTools onClose={() => setActiveTool('none')} />}
 
-          {activeTool === 'bookmarks' && (
-            <BookmarksPanel onClose={() => setActiveTool('none')} />
-          )}
+          {activeTool === 'bookmarks' && <BookmarksPanel onClose={() => setActiveTool('none')} />}
 
-          {activeTool === 'search' && (
-            <SearchPanel onClose={() => setActiveTool('none')} />
-          )}
+          {activeTool === 'search' && <SearchPanel onClose={() => setActiveTool('none')} />}
 
           {/* Tabla de atributos en la parte inferior */}
           {showAttributeTable && (

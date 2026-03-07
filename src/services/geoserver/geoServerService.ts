@@ -48,7 +48,7 @@ export class GeoServerService {
     const params = new URLSearchParams({
       service: 'WMS',
       version: '1.1.1',
-      request: 'GetCapabilities'
+      request: 'GetCapabilities',
     });
 
     return `${this.baseUrl}/${workspace}/wms?${params.toString()}`;
@@ -63,7 +63,7 @@ export class GeoServerService {
       version: '1.0.0',
       request: 'GetFeature',
       typeName: `${request.workspace}:${request.typeName}`,
-      outputFormat: 'application/json'
+      outputFormat: 'application/json',
     });
 
     if (request.maxFeatures) {
@@ -79,7 +79,7 @@ export class GeoServerService {
     }
 
     const url = `${this.baseUrl}/${request.workspace}/ows?${params.toString()}`;
-    
+
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -95,7 +95,12 @@ export class GeoServerService {
   /**
    * Construye URL para GetFeatureInfo WMS
    */
-  getFeatureInfoUrl(config: WMSLayerConfig, point: { x: number, y: number }, mapSize: { width: number, height: number }, bbox: string): string {
+  getFeatureInfoUrl(
+    config: WMSLayerConfig,
+    point: { x: number; y: number },
+    mapSize: { width: number; height: number },
+    bbox: string
+  ): string {
     const params = new URLSearchParams({
       service: 'WMS',
       version: '1.1.1',
@@ -108,7 +113,7 @@ export class GeoServerService {
       width: mapSize.width.toString(),
       height: mapSize.height.toString(),
       bbox: bbox,
-      srs: 'EPSG:4326'
+      srs: 'EPSG:4326',
     });
 
     return `${this.baseUrl}/${config.workspace}/wms?${params.toString()}`;

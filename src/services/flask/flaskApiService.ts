@@ -38,15 +38,15 @@ export class FlaskApiService extends BaseApiService {
   /**
    * Obtiene información de ubicaciones GIS - endpoint disponible en backend
    */
-  async getGISLocations(): Promise<{ locations: any[], count: number }> {
-    return this.get<{ locations: any[], count: number }>('/api/gis/locations');
+  async getGISLocations(): Promise<{ locations: any[]; count: number }> {
+    return this.get<{ locations: any[]; count: number }>('/api/gis/locations');
   }
 
   /**
    * Analiza datos GIS - endpoint disponible en backend
    */
-  async analyzeGISData(data: any): Promise<{ result: string, data: any }> {
-    return this.post<{ result: string, data: any }>('/api/gis/analyze', data);
+  async analyzeGISData(data: any): Promise<{ result: string; data: any }> {
+    return this.post<{ result: string; data: any }>('/api/gis/analyze', data);
   }
 
   /**
@@ -82,7 +82,11 @@ export class FlaskApiService extends BaseApiService {
     throw new Error('Endpoint no disponible');
   }
 
-  async updateFeature(layerId: string, featureId: string, feature: Partial<GeoFeature>): Promise<GeoFeature> {
+  async updateFeature(
+    layerId: string,
+    featureId: string,
+    feature: Partial<GeoFeature>
+  ): Promise<GeoFeature> {
     console.warn('⚠️ Endpoint de actualizar feature no implementado en backend');
     throw new Error('Endpoint no disponible');
   }

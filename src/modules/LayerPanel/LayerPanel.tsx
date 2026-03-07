@@ -1,6 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { useLayers } from '../../core/contexts/LayerContext';
-import { GeometryType } from '../../core/types/gis.types';  // ✅ AGREGAR ESTA LÍNEA
+import { GeometryType } from '../../core/types/gis.types'; // ✅ AGREGAR ESTA LÍNEA
 import { useMap } from '../../core/contexts/MapContext';
 import L from 'leaflet';
 
@@ -28,11 +28,11 @@ const detectGeometryType = (geoJson: any): GeometryType | undefined => {
   if (!geoJson?.features || geoJson.features.length === 0) {
     return undefined;
   }
-  
+
   // Obtener tipo del primer feature
   const firstGeometry = geoJson.features[0]?.geometry?.type;
   console.log('🎯 Tipo de geometría detectada:', firstGeometry);
-  
+
   return firstGeometry as GeometryType;
 };
 
@@ -92,12 +92,14 @@ export const LayerPanel: React.FC = () => {
               fillOpacity: 0.9,
               // Configurar para que sea visible en todos los zoom levels
               interactive: true,
-              bubblingMouseEvents: false
+              bubblingMouseEvents: false,
             });
 
             // OPCIÓN 2: Marcador estándar con ícono simple (respaldo)
             const standardIcon = L.icon({
-              iconUrl: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`
+              iconUrl:
+                'data:image/svg+xml;charset=utf-8,' +
+                encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
           <circle cx="15" cy="15" r="12" fill="#ff0000" stroke="#ffffff" stroke-width="3"/>
           <text x="15" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#ffffff">${index + 1}</text>
@@ -105,14 +107,14 @@ export const LayerPanel: React.FC = () => {
       `),
               iconSize: [30, 30],
               iconAnchor: [15, 15],
-              popupAnchor: [0, -15]
+              popupAnchor: [0, -15],
             });
 
             const standardMarker = L.marker([lat, lng], {
               icon: standardIcon,
               zIndexOffset: 10000,
               riseOnHover: true,
-              riseOffset: 250
+              riseOffset: 250,
             });
 
             // Configurar popup para AMBOS marcadores
@@ -136,12 +138,12 @@ export const LayerPanel: React.FC = () => {
 
             circleMarker.bindPopup(popupContent, {
               maxWidth: 300,
-              className: 'kml-popup-circle'
+              className: 'kml-popup-circle',
             });
 
             standardMarker.bindPopup(popupContent, {
               maxWidth: 300,
-              className: 'kml-popup-standard'
+              className: 'kml-popup-standard',
             });
 
             // Agregar AMBOS marcadores al mapa
@@ -169,7 +171,9 @@ export const LayerPanel: React.FC = () => {
               console.log(`❌ StandardMarker ${index + 1} removido del mapa`);
             });
 
-            console.log(`✅ Marcadores duales ${index + 1} agregados: CircleMarker + StandardMarker`);
+            console.log(
+              `✅ Marcadores duales ${index + 1} agregados: CircleMarker + StandardMarker`
+            );
           }
         });
 
@@ -202,10 +206,10 @@ export const LayerPanel: React.FC = () => {
               padding: [40, 40],
               maxZoom: 15,
               animate: true,
-              duration: 1.0
+              duration: 1.0,
             });
           }, 300);
-        }        // Detectar tipo de geometría
+        } // Detectar tipo de geometría
         const geometryTypeKml = detectGeometryType(geoJsonData);
         console.log(' KML - Geometría detectada:', geometryTypeKml);
 
@@ -217,7 +221,7 @@ export const LayerPanel: React.FC = () => {
           visible: true,
           opacity: 1,
           geometryType: geometryTypeKml,
-          zIndex: 1000,  //  Campo agregado
+          zIndex: 1000, //  Campo agregado
           data: geoJsonData,
           leafletLayer: layerGroup, // Guardamos el grupo para manejo
           markers: createdMarkers, // Guardamos las referencias individuales
@@ -225,8 +229,8 @@ export const LayerPanel: React.FC = () => {
             color: '#ff0000',
             weight: 3,
             opacity: 1,
-            fillOpacity: 0.8
-          }
+            fillOpacity: 0.8,
+          },
         };
 
         // Agregar al contexto
@@ -236,16 +240,19 @@ export const LayerPanel: React.FC = () => {
 
         // Log de confirmación con delay
         setTimeout(() => {
-          const markersInMap = map.hasLayer ? createdMarkers.filter(m => map.hasLayer(m)).length : createdMarkers.length;
-          console.log(`🔍 Verificación: ${markersInMap}/${createdMarkers.length} marcadores visibles en el mapa`);
+          const markersInMap = map.hasLayer
+            ? createdMarkers.filter(m => map.hasLayer(m)).length
+            : createdMarkers.length;
+          console.log(
+            `🔍 Verificación: ${markersInMap}/${createdMarkers.length} marcadores visibles en el mapa`
+          );
         }, 500);
 
         console.log(`🎉 KML cargado: ${fileName} con ${geoJsonData.features.length} elementos`);
-
       } else if (fileExtension === 'shp' || fileExtension === 'zip') {
         // 🟩 PROCESAR SHAPEFILE (ZIP)
         console.log(`📦 Procesando archivo Shapefile/ZIP: ${fileName}`);
-        
+
         const geoJsonData = await shapefileToGeoJSON(file);
 
         if (!geoJsonData.features || geoJsonData.features.length === 0) {
@@ -260,8 +267,13 @@ export const LayerPanel: React.FC = () => {
         geoJsonData.features.forEach((feature: any, index: number) => {
           const geometryType = feature.geometry.type;
           const properties = feature.properties || {};
-          const name = properties.name || properties.NAME || properties.title || `Elemento ${index + 1}`;
-          const description = properties.description || properties.DESCRIPTION || properties.info || 'Elemento de Shapefile';
+          const name =
+            properties.name || properties.NAME || properties.title || `Elemento ${index + 1}`;
+          const description =
+            properties.description ||
+            properties.DESCRIPTION ||
+            properties.info ||
+            'Elemento de Shapefile';
 
           // 🟢 PUNTOS
           if (geometryType === 'Point') {
@@ -285,9 +297,9 @@ export const LayerPanel: React.FC = () => {
                   color: white;
                 ">${index + 1}</div>`,
                 iconSize: [28, 28],
-                iconAnchor: [14, 14]
+                iconAnchor: [14, 14],
               }),
-              zIndexOffset: 2000 + index
+              zIndexOffset: 2000 + index,
             });
 
             marker.bindPopup(`
@@ -303,15 +315,18 @@ export const LayerPanel: React.FC = () => {
             marker.addTo(map);
             createdMarkers.push(marker);
 
-          // 🟠 LÍNEAS
+            // 🟠 LÍNEAS
           } else if (geometryType === 'LineString') {
-            const coordinates = feature.geometry.coordinates.map((coord: number[]) => [coord[1], coord[0]]);
-            
+            const coordinates = feature.geometry.coordinates.map((coord: number[]) => [
+              coord[1],
+              coord[0],
+            ]);
+
             const polyline = L.polyline(coordinates, {
               color: '#fd7e14',
               weight: 4,
               opacity: 0.8,
-              dashArray: '8, 4'
+              dashArray: '8, 4',
             });
 
             polyline.bindPopup(`
@@ -327,16 +342,19 @@ export const LayerPanel: React.FC = () => {
             polyline.addTo(map);
             createdMarkers.push(polyline);
 
-          // 🟣 POLÍGONOS
+            // 🟣 POLÍGONOS
           } else if (geometryType === 'Polygon') {
-            const coordinates = feature.geometry.coordinates[0].map((coord: number[]) => [coord[1], coord[0]]);
-            
+            const coordinates = feature.geometry.coordinates[0].map((coord: number[]) => [
+              coord[1],
+              coord[0],
+            ]);
+
             const polygon = L.polygon(coordinates, {
               color: '#6f42c1',
               fillColor: '#6f42c1',
               weight: 2,
               opacity: 0.8,
-              fillOpacity: 0.4
+              fillOpacity: 0.4,
             });
 
             polygon.bindPopup(`
@@ -352,9 +370,9 @@ export const LayerPanel: React.FC = () => {
             polygon.addTo(map);
             createdMarkers.push(polygon);
 
-          // 🟠 MULTILÍNEAS
+            // 🟠 MULTILÍNEAS
           } else if (geometryType === 'MultiLineString') {
-            const multiCoordinates = feature.geometry.coordinates.map((line: number[][]) => 
+            const multiCoordinates = feature.geometry.coordinates.map((line: number[][]) =>
               line.map((coord: number[]) => [coord[1], coord[0]])
             );
 
@@ -362,7 +380,7 @@ export const LayerPanel: React.FC = () => {
               color: '#fd7e14',
               weight: 4,
               opacity: 0.8,
-              dashArray: '8, 4'
+              dashArray: '8, 4',
             });
 
             multiPolyline.bindPopup(`
@@ -378,7 +396,7 @@ export const LayerPanel: React.FC = () => {
             multiPolyline.addTo(map);
             createdMarkers.push(multiPolyline);
 
-          // 🟣 MULTIPOLÍGONOS
+            // 🟣 MULTIPOLÍGONOS
           } else if (geometryType === 'MultiPolygon') {
             const multiCoordinates = feature.geometry.coordinates.map((polygon: number[][][]) =>
               polygon[0].map((coord: number[]) => [coord[1], coord[0]])
@@ -389,7 +407,7 @@ export const LayerPanel: React.FC = () => {
               fillColor: '#6f42c1',
               weight: 2,
               opacity: 0.8,
-              fillOpacity: 0.4
+              fillOpacity: 0.4,
             });
 
             multiPolygon.bindPopup(`
@@ -404,7 +422,6 @@ export const LayerPanel: React.FC = () => {
 
             multiPolygon.addTo(map);
             createdMarkers.push(multiPolygon);
-
           } else {
             console.warn(`⚠️ Tipo de geometría no soportado en Shapefile: ${geometryType}`);
           }
@@ -449,10 +466,11 @@ export const LayerPanel: React.FC = () => {
               padding: [40, 40],
               maxZoom: 16,
               animate: true,
-              duration: 1.2
+              duration: 1.2,
             });
           }, 400);
-        }        const layerGroup = L.layerGroup(createdMarkers);
+        }
+        const layerGroup = L.layerGroup(createdMarkers);
 
         // Detectar tipo de geometría
         const geometryTypeShp = detectGeometryType(geoJsonData);
@@ -465,19 +483,20 @@ export const LayerPanel: React.FC = () => {
           visible: true,
           opacity: 1,
           geometryType: geometryTypeShp,
-          zIndex: 1000,  //  Campo agregado
+          zIndex: 1000, //  Campo agregado
           data: geoJsonData,
           leafletLayer: layerGroup,
           markers: createdMarkers,
-          style: { color: '#28a745', weight: 2, opacity: 1, fillOpacity: 0.6 }
+          style: { color: '#28a745', weight: 2, opacity: 1, fillOpacity: 0.6 },
         };
 
         addLayer(newLayer);
         setShowUploader(false);
         setError(null);
 
-        console.log(`🎉 Shapefile cargado: ${fileName} con ${geoJsonData.features.length} elementos`);
-
+        console.log(
+          `🎉 Shapefile cargado: ${fileName} con ${geoJsonData.features.length} elementos`
+        );
       } else if (fileExtension === 'geojson' || fileExtension === 'json') {
         // Manejo similar para GeoJSON...
         const text = await file.text();
@@ -508,9 +527,9 @@ export const LayerPanel: React.FC = () => {
                   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
                 "></div>`,
                   iconSize: [26, 26],
-                  iconAnchor: [13, 13]
+                  iconAnchor: [13, 13],
                 }),
-                zIndexOffset: 1500 + index
+                zIndexOffset: 1500 + index,
               });
 
               marker.bindPopup(`
@@ -526,15 +545,18 @@ export const LayerPanel: React.FC = () => {
               marker.addTo(map);
               createdMarkers.push(marker);
 
-            // 🔷 LÍNEAS
+              // 🔷 LÍNEAS
             } else if (geometryType === 'LineString') {
-              const coordinates = feature.geometry.coordinates.map((coord: number[]) => [coord[1], coord[0]]);
-              
+              const coordinates = feature.geometry.coordinates.map((coord: number[]) => [
+                coord[1],
+                coord[0],
+              ]);
+
               const polyline = L.polyline(coordinates, {
                 color: '#ff6600',
                 weight: 4,
                 opacity: 0.8,
-                dashArray: '10, 5'
+                dashArray: '10, 5',
               });
 
               polyline.bindPopup(`
@@ -550,16 +572,19 @@ export const LayerPanel: React.FC = () => {
               polyline.addTo(map);
               createdMarkers.push(polyline);
 
-            // 🔺 POLÍGONOS
+              // 🔺 POLÍGONOS
             } else if (geometryType === 'Polygon') {
-              const coordinates = feature.geometry.coordinates[0].map((coord: number[]) => [coord[1], coord[0]]);
-              
+              const coordinates = feature.geometry.coordinates[0].map((coord: number[]) => [
+                coord[1],
+                coord[0],
+              ]);
+
               const polygon = L.polygon(coordinates, {
                 color: '#28a745',
                 fillColor: '#28a745',
                 weight: 2,
                 opacity: 0.8,
-                fillOpacity: 0.3
+                fillOpacity: 0.3,
               });
 
               polygon.bindPopup(`
@@ -575,9 +600,9 @@ export const LayerPanel: React.FC = () => {
               polygon.addTo(map);
               createdMarkers.push(polygon);
 
-            // 🔷 MULTILÍNEAS
+              // 🔷 MULTILÍNEAS
             } else if (geometryType === 'MultiLineString') {
-              const multiCoordinates = feature.geometry.coordinates.map((line: number[][]) => 
+              const multiCoordinates = feature.geometry.coordinates.map((line: number[][]) =>
                 line.map((coord: number[]) => [coord[1], coord[0]])
               );
 
@@ -585,7 +610,7 @@ export const LayerPanel: React.FC = () => {
                 color: '#ff6600',
                 weight: 4,
                 opacity: 0.8,
-                dashArray: '10, 5'
+                dashArray: '10, 5',
               });
 
               multiPolyline.bindPopup(`
@@ -601,7 +626,7 @@ export const LayerPanel: React.FC = () => {
               multiPolyline.addTo(map);
               createdMarkers.push(multiPolyline);
 
-            // 🔺 MULTIPOLÍGONOS
+              // 🔺 MULTIPOLÍGONOS
             } else if (geometryType === 'MultiPolygon') {
               const multiCoordinates = feature.geometry.coordinates.map((polygon: number[][][]) =>
                 polygon[0].map((coord: number[]) => [coord[1], coord[0]])
@@ -612,7 +637,7 @@ export const LayerPanel: React.FC = () => {
                 fillColor: '#28a745',
                 weight: 2,
                 opacity: 0.8,
-                fillOpacity: 0.3
+                fillOpacity: 0.3,
               });
 
               multiPolygon.bindPopup(`
@@ -627,12 +652,12 @@ export const LayerPanel: React.FC = () => {
 
               multiPolygon.addTo(map);
               createdMarkers.push(multiPolygon);
-
             } else {
               console.warn(`⚠️ Tipo de geometría no soportado: ${geometryType}`);
             }
           });
-        }        const layerGroup = L.layerGroup(createdMarkers);
+        }
+        const layerGroup = L.layerGroup(createdMarkers);
 
         // Detectar tipo de geometría
         const geometryTypeGj = detectGeometryType(geoJsonData);
@@ -645,21 +670,19 @@ export const LayerPanel: React.FC = () => {
           visible: true,
           opacity: 1,
           geometryType: geometryTypeGj,
-          zIndex: 1000,  //  Campo agregado
+          zIndex: 1000, //  Campo agregado
           data: geoJsonData,
           leafletLayer: layerGroup,
           markers: createdMarkers,
-          style: { color: '#0066cc', weight: 2, opacity: 1, fillOpacity: 0.8 }
+          style: { color: '#0066cc', weight: 2, opacity: 1, fillOpacity: 0.8 },
         };
 
         addLayer(newLayer);
         setShowUploader(false);
         setError(null);
-
       } else {
         throw new Error('Formato no soportado. Use KML, GeoJSON, JSON o Shapefile (ZIP).');
       }
-
     } catch (err) {
       console.error('Error procesando archivo:', err);
       setError(`❌ ${err instanceof Error ? err.message : 'Error desconocido'}`);
@@ -674,61 +697,67 @@ export const LayerPanel: React.FC = () => {
     try {
       // Cargar shpjs dinámicamente
       const shpLib = await loadShpJS();
-      
+
       // Para archivos ZIP que contienen shapefiles
       if (file.name.toLowerCase().endsWith('.zip')) {
         console.log('📦 Procesando archivo ZIP con Shapefile...');
-        
+
         // Convertir el archivo a ArrayBuffer
         const arrayBuffer = await file.arrayBuffer();
-        
+
         try {
           console.log('🔄 Iniciando conversión con shpjs...');
           const geoJson = await shpLib(arrayBuffer);
           console.log('✅ Shapefile convertido exitosamente:', geoJson);
-          
+
           // Verificar que el resultado sea válido
           if (!geoJson || !geoJson.features) {
             throw new Error('El archivo no produjo datos GeoJSON válidos');
           }
-          
+
           return geoJson;
         } catch (shpError) {
           console.error('❌ Error en shpjs:', shpError);
-          throw new Error(`Error convirtiendo Shapefile: ${shpError instanceof Error ? shpError.message : 'Error desconocido'}`);
+          throw new Error(
+            `Error convirtiendo Shapefile: ${shpError instanceof Error ? shpError.message : 'Error desconocido'}`
+          );
         }
-        
       } else if (file.name.toLowerCase().endsWith('.shp')) {
         // Para archivos .shp individuales
         console.log('📄 Procesando archivo SHP individual...');
-        
+
         const arrayBuffer = await file.arrayBuffer();
-        
+
         try {
           const geoJson = await shpLib(arrayBuffer);
           console.log('✅ Archivo SHP convertido exitosamente:', geoJson);
-          
+
           if (!geoJson || !geoJson.features) {
             throw new Error('El archivo SHP no produjo datos GeoJSON válidos');
           }
-          
+
           return geoJson;
         } catch (shpError) {
           console.error('❌ Error en shpjs (SHP):', shpError);
-          throw new Error(`Error convirtiendo archivo SHP: ${shpError instanceof Error ? shpError.message : 'Error desconocido'}`);
+          throw new Error(
+            `Error convirtiendo archivo SHP: ${shpError instanceof Error ? shpError.message : 'Error desconocido'}`
+          );
         }
       }
-      
+
       throw new Error('Formato de Shapefile no reconocido. Use archivos .zip o .shp');
-      
     } catch (error) {
       console.error('❌ Error general procesando Shapefile:', error);
-      
+
       if (error instanceof Error && error.message.includes('shpjs')) {
-        throw new Error('Error con la librería shpjs. Verifica que esté instalada correctamente: npm install shpjs @types/shpjs');
+        throw new Error(
+          'Error con la librería shpjs. Verifica que esté instalada correctamente: npm install shpjs @types/shpjs'
+        );
       }
-      
-      throw new Error(`Error procesando Shapefile: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+
+      throw new Error(
+        `Error procesando Shapefile: ${error instanceof Error ? error.message : 'Error desconocido'}`
+      );
     }
   };
 
@@ -792,7 +821,7 @@ export const LayerPanel: React.FC = () => {
       const placemark = placemarks[i];
       const nameEl = placemark.getElementsByTagName('name')[0];
       const descriptionEl = placemark.getElementsByTagName('description')[0];
-      
+
       // 🔵 PUNTOS
       const pointEl = placemark.getElementsByTagName('Point')[0];
       if (pointEl) {
@@ -810,12 +839,12 @@ export const LayerPanel: React.FC = () => {
                   type: 'Feature',
                   properties: {
                     name: nameEl?.textContent || `Punto ${i + 1}`,
-                    description: descriptionEl?.textContent || 'Sin descripción'
+                    description: descriptionEl?.textContent || 'Sin descripción',
                   },
                   geometry: {
                     type: 'Point',
-                    coordinates: [lng, lat]
-                  }
+                    coordinates: [lng, lat],
+                  },
                 });
                 console.log(`✅ Punto ${i + 1}: ${lat}, ${lng} - ${nameEl?.textContent}`);
               }
@@ -823,7 +852,7 @@ export const LayerPanel: React.FC = () => {
           }
         }
       }
-      
+
       // 🔷 LÍNEAS
       const lineStringEl = placemark.getElementsByTagName('LineString')[0];
       if (lineStringEl) {
@@ -831,7 +860,8 @@ export const LayerPanel: React.FC = () => {
         if (coordinatesEl) {
           const coordsText = coordinatesEl.textContent?.trim();
           if (coordsText) {
-            const coordinates = coordsText.split(' ')
+            const coordinates = coordsText
+              .split(' ')
               .map(coord => coord.split(','))
               .filter(parts => parts.length >= 2)
               .map(parts => [parseFloat(parts[0]), parseFloat(parts[1])])
@@ -842,14 +872,16 @@ export const LayerPanel: React.FC = () => {
                 type: 'Feature',
                 properties: {
                   name: nameEl?.textContent || `Línea ${i + 1}`,
-                  description: descriptionEl?.textContent || 'Sin descripción'
+                  description: descriptionEl?.textContent || 'Sin descripción',
                 },
                 geometry: {
                   type: 'LineString',
-                  coordinates: coordinates
-                }
+                  coordinates: coordinates,
+                },
               });
-              console.log(`✅ Línea ${i + 1}: ${coordinates.length} puntos - ${nameEl?.textContent}`);
+              console.log(
+                `✅ Línea ${i + 1}: ${coordinates.length} puntos - ${nameEl?.textContent}`
+              );
             }
           }
         }
@@ -866,7 +898,8 @@ export const LayerPanel: React.FC = () => {
             if (coordinatesEl) {
               const coordsText = coordinatesEl.textContent?.trim();
               if (coordsText) {
-                const coordinates = coordsText.split(' ')
+                const coordinates = coordsText
+                  .split(' ')
                   .map(coord => coord.split(','))
                   .filter(parts => parts.length >= 2)
                   .map(parts => [parseFloat(parts[0]), parseFloat(parts[1])])
@@ -877,14 +910,16 @@ export const LayerPanel: React.FC = () => {
                     type: 'Feature',
                     properties: {
                       name: nameEl?.textContent || `Polígono ${i + 1}`,
-                      description: descriptionEl?.textContent || 'Sin descripción'
+                      description: descriptionEl?.textContent || 'Sin descripción',
                     },
                     geometry: {
                       type: 'Polygon',
-                      coordinates: [coordinates]
-                    }
+                      coordinates: [coordinates],
+                    },
                   });
-                  console.log(`✅ Polígono ${i + 1}: ${coordinates.length} vértices - ${nameEl?.textContent}`);
+                  console.log(
+                    `✅ Polígono ${i + 1}: ${coordinates.length} vértices - ${nameEl?.textContent}`
+                  );
                 }
               }
             }
@@ -895,36 +930,38 @@ export const LayerPanel: React.FC = () => {
 
     return {
       type: 'FeatureCollection',
-      features
+      features,
     };
   };
 
   return (
-    <div style={{
-      position: 'absolute',
-      left: 0,
-      top: 0,
-      height: '100%',
-      width: isExpanded ? '320px' : '50px',
-      background: 'white',
-      boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)',
-      transition: 'width 0.3s ease',
-      zIndex: 1000,
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
-      {/* Header */}
-      <div style={{
-        padding: '15px',
-        borderBottom: '1px solid #e0e0e0',
+    <div
+      style={{
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        height: '100%',
+        width: isExpanded ? '320px' : '50px',
+        background: 'white',
+        boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)',
+        transition: 'width 0.3s ease',
+        zIndex: 1000,
         display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: '#f8f9fa'
-      }}>
-        <h3 style={{ margin: 0, fontSize: '16px', color: '#333' }}>
-          📁 Capas ({layers.length})
-        </h3>
+        flexDirection: 'column',
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          padding: '15px',
+          borderBottom: '1px solid #e0e0e0',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: '#f8f9fa',
+        }}
+      >
+        <h3 style={{ margin: 0, fontSize: '16px', color: '#333' }}>📁 Capas ({layers.length})</h3>
         <div>
           <button
             onClick={() => setShowUploader(!showUploader)}
@@ -937,7 +974,7 @@ export const LayerPanel: React.FC = () => {
               marginRight: '5px',
               color: showUploader ? 'white' : '#007cba',
               fontSize: '16px',
-              borderRadius: '4px'
+              borderRadius: '4px',
             }}
           >
             ➕
@@ -951,7 +988,7 @@ export const LayerPanel: React.FC = () => {
               cursor: 'pointer',
               padding: '5px',
               color: '#333',
-              fontSize: '16px'
+              fontSize: '16px',
             }}
           >
             {isExpanded ? '◀' : '▶'}
@@ -975,7 +1012,7 @@ export const LayerPanel: React.FC = () => {
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '14px',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
                 }}
               >
                 🎯 Agregar Primera Capa
@@ -984,27 +1021,40 @@ export const LayerPanel: React.FC = () => {
           ) : (
             <div>
               {layers.map((layer, index) => (
-                <div key={layer.id} style={{
-                  padding: '12px',
-                  border: '2px solid #e0e0e0',
-                  marginBottom: '10px',
-                  borderRadius: '6px',
-                  backgroundColor: layer.visible ? '#f9f9f9' : '#f5f5f5'
-                }}>
-                  <div style={{
-                    fontWeight: 'bold',
-                    color: '#333',
-                    marginBottom: '6px',
-                    fontSize: '14px'
-                  }}>
-                    {layer.name.includes('.kml') ? '🔴' : layer.name.includes('.shp') || layer.name.includes('.zip') ? '🟢' : '🔵'} {layer.name}
+                <div
+                  key={layer.id}
+                  style={{
+                    padding: '12px',
+                    border: '2px solid #e0e0e0',
+                    marginBottom: '10px',
+                    borderRadius: '6px',
+                    backgroundColor: layer.visible ? '#f9f9f9' : '#f5f5f5',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 'bold',
+                      color: '#333',
+                      marginBottom: '6px',
+                      fontSize: '14px',
+                    }}
+                  >
+                    {layer.name.includes('.kml')
+                      ? '🔴'
+                      : layer.name.includes('.shp') || layer.name.includes('.zip')
+                        ? '🟢'
+                        : '🔵'}{' '}
+                    {layer.name}
                   </div>
-                  <div style={{
-                    fontSize: '12px',
-                    color: '#666',
-                    marginBottom: '10px'
-                  }}>
-                    📊 {layer.data?.features?.length || 0} elementos • {layer.visible ? '✅ Visible' : '❌ Oculto'}
+                  <div
+                    style={{
+                      fontSize: '12px',
+                      color: '#666',
+                      marginBottom: '10px',
+                    }}
+                  >
+                    📊 {layer.data?.features?.length || 0} elementos •{' '}
+                    {layer.visible ? '✅ Visible' : '❌ Oculto'}
                   </div>
                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                     <button
@@ -1018,7 +1068,7 @@ export const LayerPanel: React.FC = () => {
                         cursor: 'pointer',
                         backgroundColor: '#17a2b8',
                         color: 'white',
-                        fontWeight: 'bold'
+                        fontWeight: 'bold',
                       }}
                     >
                       🎯
@@ -1033,7 +1083,7 @@ export const LayerPanel: React.FC = () => {
                         borderRadius: '4px',
                         cursor: 'pointer',
                         backgroundColor: layer.visible ? '#28a745' : '#6c757d',
-                        color: 'white'
+                        color: 'white',
                       }}
                     >
                       {layer.visible ? '👁️' : '🙈'}
@@ -1048,7 +1098,7 @@ export const LayerPanel: React.FC = () => {
                         borderRadius: '4px',
                         cursor: 'pointer',
                         backgroundColor: '#dc3545',
-                        color: 'white'
+                        color: 'white',
                       }}
                     >
                       🗑️
@@ -1060,21 +1110,25 @@ export const LayerPanel: React.FC = () => {
           )}
 
           {showUploader && (
-            <div style={{
-              marginTop: '15px',
-              padding: '0',
-              border: '2px solid #007cba',
-              borderRadius: '8px',
-              backgroundColor: '#ffffff',
-              overflow: 'hidden'
-            }}>
+            <div
+              style={{
+                marginTop: '15px',
+                padding: '0',
+                border: '2px solid #007cba',
+                borderRadius: '8px',
+                backgroundColor: '#ffffff',
+                overflow: 'hidden',
+              }}
+            >
               {/* Header informativo */}
-              <div style={{
-                backgroundColor: '#007cba',
-                color: 'white',
-                padding: '12px 15px',
-                textAlign: 'center'
-              }}>
+              <div
+                style={{
+                  backgroundColor: '#007cba',
+                  color: 'white',
+                  padding: '12px 15px',
+                  textAlign: 'center',
+                }}
+              >
                 <h4 style={{ margin: '0', fontSize: '16px' }}>
                   📁 Cargador de Archivos Geográficos
                 </h4>
@@ -1085,96 +1139,112 @@ export const LayerPanel: React.FC = () => {
 
               <div style={{ padding: '15px' }}>
                 {/* Información de formatos soportados */}
-                <div style={{
-                  marginBottom: '15px',
-                  padding: '12px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '6px',
-                  border: '1px solid #e9ecef'
-                }}>
+                <div
+                  style={{
+                    marginBottom: '15px',
+                    padding: '12px',
+                    backgroundColor: '#f8f9fa',
+                    borderRadius: '6px',
+                    border: '1px solid #e9ecef',
+                  }}
+                >
                   <h5 style={{ margin: '0 0 10px 0', color: '#333', fontSize: '14px' }}>
                     📋 Formatos Soportados y Simbología:
                   </h5>
 
                   <div style={{ fontSize: '12px', color: '#555', lineHeight: '1.5' }}>
                     <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
-                      <span style={{
-                        display: 'inline-block',
-                        width: '20px',
-                        height: '20px',
-                        backgroundColor: '#ff0000',
-                        borderRadius: '50%',
-                        border: '2px solid white',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-                        marginRight: '8px'
-                      }}></span>
-                      <strong>📄 KML (Google Earth):</strong> Marcadores rojos círculos • Acepta puntos, líneas y polígonos
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          width: '20px',
+                          height: '20px',
+                          backgroundColor: '#ff0000',
+                          borderRadius: '50%',
+                          border: '2px solid white',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                          marginRight: '8px',
+                        }}
+                      ></span>
+                      <strong>📄 KML (Google Earth):</strong> Marcadores rojos círculos • Acepta
+                      puntos, líneas y polígonos
                     </div>
 
                     <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
-                      <span style={{
-                        display: 'inline-block',
-                        width: '16px',
-                        height: '16px',
-                        backgroundColor: '#0066cc',
-                        borderRadius: '50%',
-                        border: '2px solid white',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-                        marginRight: '8px'
-                      }}></span>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          width: '16px',
+                          height: '16px',
+                          backgroundColor: '#0066cc',
+                          borderRadius: '50%',
+                          border: '2px solid white',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                          marginRight: '8px',
+                        }}
+                      ></span>
                       <strong>🗂️ GeoJSON:</strong> Marcadores azules círculos • Formato web estándar
                     </div>
 
                     <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
-                      <span style={{
-                        display: 'inline-block',
-                        width: '20px',
-                        height: '20px',
-                        backgroundColor: '#28a745',
-                        borderRadius: '50%',
-                        border: '2px solid white',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-                        marginRight: '8px'
-                      }}></span>
-                      <strong>🟢 Shapefile (ZIP):</strong> Marcadores verdes • Archivos SHP comprimidos
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          width: '20px',
+                          height: '20px',
+                          backgroundColor: '#28a745',
+                          borderRadius: '50%',
+                          border: '2px solid white',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                          marginRight: '8px',
+                        }}
+                      ></span>
+                      <strong>🟢 Shapefile (ZIP):</strong> Marcadores verdes • Archivos SHP
+                      comprimidos
                     </div>
 
                     <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
-                      <span style={{
-                        display: 'inline-block',
-                        width: '20px',
-                        height: '4px',
-                        backgroundColor: '#ff6600',
-                        marginRight: '8px',
-                        border: '1px solid white'
-                      }}></span>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          width: '20px',
+                          height: '4px',
+                          backgroundColor: '#ff6600',
+                          marginRight: '8px',
+                          border: '1px solid white',
+                        }}
+                      ></span>
                       <strong>🔶 Líneas:</strong> Líneas naranjas con puntos
                     </div>
 
                     <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
-                      <span style={{
-                        display: 'inline-block',
-                        width: '16px',
-                        height: '16px',
-                        backgroundColor: '#28a745',
-                        opacity: 0.6,
-                        border: '2px solid #28a745',
-                        marginRight: '8px'
-                      }}></span>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          width: '16px',
+                          height: '16px',
+                          backgroundColor: '#28a745',
+                          opacity: 0.6,
+                          border: '2px solid #28a745',
+                          marginRight: '8px',
+                        }}
+                      ></span>
                       <strong>🔺 Polígonos:</strong> Áreas verdes con borde
                     </div>
                   </div>
                 </div>
 
                 {/* Área de carga de archivos */}
-                <div style={{
-                  border: '2px dashed #007cba',
-                  borderRadius: '6px',
-                  backgroundColor: '#f0f8ff',
-                  padding: '20px',
-                  textAlign: 'center',
-                  marginBottom: '15px'
-                }}>
+                <div
+                  style={{
+                    border: '2px dashed #007cba',
+                    borderRadius: '6px',
+                    backgroundColor: '#f0f8ff',
+                    padding: '20px',
+                    textAlign: 'center',
+                    marginBottom: '15px',
+                  }}
+                >
                   <div style={{ fontSize: '36px', marginBottom: '10px' }}>📂</div>
                   <input
                     type="file"
@@ -1187,51 +1257,63 @@ export const LayerPanel: React.FC = () => {
                       border: '1px solid #ccc',
                       borderRadius: '4px',
                       backgroundColor: loading ? '#f8f9fa' : '#fff',
-                      cursor: loading ? 'not-allowed' : 'pointer'
+                      cursor: loading ? 'not-allowed' : 'pointer',
                     }}
                   />
 
                   {loading && (
-                    <div style={{
-                      color: '#007cba',
-                      fontSize: '14px',
-                      marginTop: '10px',
-                      fontWeight: 'bold'
-                    }}>
+                    <div
+                      style={{
+                        color: '#007cba',
+                        fontSize: '14px',
+                        marginTop: '10px',
+                        fontWeight: 'bold',
+                      }}
+                    >
                       ⏳ Procesando archivo... Por favor espera
                     </div>
                   )}
                 </div>
 
                 {/* Información adicional */}
-                <div style={{
-                  fontSize: '11px',
-                  color: '#666',
-                  backgroundColor: '#fff3cd',
-                  padding: '8px',
-                  borderRadius: '4px',
-                  border: '1px solid #ffeaa7'
-                }}>
-                  <strong>💡 Consejos:</strong><br />
-                  • Los archivos se centrarán automáticamente en el mapa<br />
-                  • Haz clic en los marcadores para ver información detallada<br />
-                  • Usa los botones 🎯 🗑️ en cada capa para management<br />
-                  • Los shapefiles deben estar comprimidos en ZIP con todos los archivos (.shp, .shx, .dbf, .prj)<br />
-                  • Formatos soportados: KML, GeoJSON, JSON, SHP (ZIP)
+                <div
+                  style={{
+                    fontSize: '11px',
+                    color: '#666',
+                    backgroundColor: '#fff3cd',
+                    padding: '8px',
+                    borderRadius: '4px',
+                    border: '1px solid #ffeaa7',
+                  }}
+                >
+                  <strong>💡 Consejos:</strong>
+                  <br />
+                  • Los archivos se centrarán automáticamente en el mapa
+                  <br />
+                  • Haz clic en los marcadores para ver información detallada
+                  <br />
+                  • Usa los botones 🎯 🗑️ en cada capa para management
+                  <br />
+                  • Los shapefiles deben estar comprimidos en ZIP con todos los archivos (.shp,
+                  .shx, .dbf, .prj)
+                  <br />• Formatos soportados: KML, GeoJSON, JSON, SHP (ZIP)
                 </div>
 
                 {/* Error display mejorado */}
                 {error && (
-                  <div style={{
-                    color: '#721c24',
-                    backgroundColor: '#f8d7da',
-                    padding: '10px',
-                    borderRadius: '4px',
-                    margin: '10px 0',
-                    fontSize: '12px',
-                    border: '1px solid #f5c6cb'
-                  }}>
-                    <strong>⚠️ Error:</strong><br />
+                  <div
+                    style={{
+                      color: '#721c24',
+                      backgroundColor: '#f8d7da',
+                      padding: '10px',
+                      borderRadius: '4px',
+                      margin: '10px 0',
+                      fontSize: '12px',
+                      border: '1px solid #f5c6cb',
+                    }}
+                  >
+                    <strong>⚠️ Error:</strong>
+                    <br />
                     {error}
                   </div>
                 )}
@@ -1252,7 +1334,7 @@ export const LayerPanel: React.FC = () => {
                       padding: '8px 12px',
                       borderRadius: '4px',
                       cursor: loading ? 'not-allowed' : 'pointer',
-                      fontSize: '12px'
+                      fontSize: '12px',
                     }}
                   >
                     ❌ Cancelar
@@ -1267,7 +1349,7 @@ export const LayerPanel: React.FC = () => {
                       padding: '8px 12px',
                       borderRadius: '4px',
                       cursor: 'pointer',
-                      fontSize: '12px'
+                      fontSize: '12px',
                     }}
                   >
                     🔄 Limpiar
@@ -1334,6 +1416,3 @@ if (typeof document !== 'undefined') {
     document.head.appendChild(style);
   }
 }
-
-
-

@@ -22,8 +22,8 @@ export class LayerAnalysisService {
       layersByType: {
         polygons: [],
         lines: [],
-        points: []
-      }
+        points: [],
+      },
     };
 
     layers.forEach(layer => {
@@ -48,13 +48,19 @@ export class LayerAnalysisService {
     const parts: string[] = [];
 
     if (analysis.polygonLayers > 0) {
-      parts.push(`${analysis.polygonLayers} capa${analysis.polygonLayers !== 1 ? 's' : ''} de tipo polígono`);
+      parts.push(
+        `${analysis.polygonLayers} capa${analysis.polygonLayers !== 1 ? 's' : ''} de tipo polígono`
+      );
     }
     if (analysis.lineLayers > 0) {
-      parts.push(`${analysis.lineLayers} capa${analysis.lineLayers !== 1 ? 's' : ''} de tipo línea`);
+      parts.push(
+        `${analysis.lineLayers} capa${analysis.lineLayers !== 1 ? 's' : ''} de tipo línea`
+      );
     }
     if (analysis.pointLayers > 0) {
-      parts.push(`${analysis.pointLayers} capa${analysis.pointLayers !== 1 ? 's' : ''} de tipo punto`);
+      parts.push(
+        `${analysis.pointLayers} capa${analysis.pointLayers !== 1 ? 's' : ''} de tipo punto`
+      );
     }
 
     if (parts.length === 0) {
@@ -64,4 +70,3 @@ export class LayerAnalysisService {
     return `En el mapa existen: ${parts.join(', ')}.`;
   }
 }
-
