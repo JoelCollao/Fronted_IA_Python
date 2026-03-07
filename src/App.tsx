@@ -13,7 +13,9 @@ import 'leaflet-geometryutil';
 import './App.css';
 
 // DeclaraciÃ³n de tipos para leaflet-geometryutil
+// Declaración de tipos para leaflet-geometryutil
 declare module 'leaflet' {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   export namespace GeometryUtil {
     function geodesicArea(latlngs: LatLng[]): number;
   }
