@@ -169,6 +169,7 @@ describe('LayerPanel', () => {
 
   // Test 9: Panel vacío
   test('muestra mensaje cuando no hay capas', () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     jest.mocked(require('../../../src/core/contexts/LayerContext').useLayers).mockReturnValue({
       layers: [],
       addLayer: mockAddLayer,
