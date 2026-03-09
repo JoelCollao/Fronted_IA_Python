@@ -25,7 +25,7 @@
     "prepare": "husky",
     "pre-commit": "lint-staged",
     "pre-push": "npm run lint:errors && npm run test",
-    "lint:errors": "eslint . --ext ts,tsx --max-warnings -1"
+    "lint:errors": "eslint . --ext ts,tsx"
   },
   "dependencies": {
     "@turf/turf": "^6.5.0",
