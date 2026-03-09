@@ -288,7 +288,8 @@ async function sendMessage() {
         
         // 📡 Llamar al orquestador del backend
         console.log('📡 Enviando al orquestador:', requestBody);
-        const response = await fetch('http://localhost:5000/api/v1/orchestrator', {
+        //const response = await fetch('http://localhost:5000/api/v1/orchestrator', {
+        const response = await fetch('https://gisbackendapp-awbsg6bghmbmcgcj.canadacentral-01.azurewebsites.net/api/v1/orchestrator' , {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

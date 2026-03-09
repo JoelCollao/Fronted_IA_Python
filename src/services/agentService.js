@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:5000/api/v1/orchestrator';
+//const API_URL = 'http://localhost:5000/api/v1/orchestrator';
+const API_URL =
+  'https://gisbackendapp-awbsg6bghmbmcgcj.canadacentral-01.azurewebsites.net/api/v1/orchestrator';
 
 export const sendMessageToAgent = async message => {
   try {

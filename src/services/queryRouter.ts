@@ -1,7 +1,9 @@
 import { LocalQueryService } from './localQueryService';
 import { GISApiService } from './gisApiService';
 
-const AI_ORCHESTRATOR_URL = 'http://localhost:5000/api/v1/orchestrator';
+//const AI_ORCHESTRATOR_URL = 'http://localhost:5000/api/v1/orchestrator';
+const AI_ORCHESTRATOR_URL =
+  'https://gisbackendapp-awbsg6bghmbmcgcj.canadacentral-01.azurewebsites.net/api/v1/orchestrator';
 
 export type QueryDestination = 'LOCAL' | 'API' | 'IA';
 

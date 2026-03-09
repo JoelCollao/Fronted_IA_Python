@@ -4,7 +4,9 @@ console.log('🚀 Cargando chatbox.js con routing inteligente...');
 // CONFIGURACIÓN
 // ========================================
 const GIS_API_URL = 'http://localhost:5000/api/v1/gis';
-const AI_ORCH_URL = 'http://localhost:5000/api/v1/orchestrator';
+//const AI_ORCH_URL = 'http://localhost:5000/api/v1/orchestrator';
+const AI_ORCH_URL =
+  'https://gisbackendapp-awbsg6bghmbmcgcj.canadacentral-01.azurewebsites.net/api/v1/orchestrator';
 
 const BADGE_COLORS = { LOCAL: '#28a745', API: '#17a2b8', IA: '#6f42c1' };
 const DEST_LABELS = {
