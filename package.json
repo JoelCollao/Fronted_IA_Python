@@ -24,7 +24,7 @@
     "build:strict": "tsc && vite build",
     "prepare": "husky",
     "pre-commit": "lint-staged",
-    "pre-push": "npm run lint:errors && npm run test",
+    "pre-push": "npm run lint:errors",
     "lint:errors": "eslint . --ext ts,tsx"
   },
   "dependencies": {

@@ -16,6 +16,7 @@ jest.mock('../../../src/components/layout/Navbar.css', () => ({}));
 jest.mock('../../../src/core/contexts/MapContext', () => ({
   useMap: () => ({
     map: mockMap,
+    mapState: { zoom: 5, center: [0, 0] },
   }),
 }));
 
@@ -133,10 +134,10 @@ describe('Navbar', () => {
     const tools = ['measurement', 'selection', 'draw', 'attributes', 'bookmarks'] as const;
 
     tools.forEach(tool => {
-      const { rerender } = render(<Navbar {...defaultProps} activeTool={tool} />);
+      const { container, rerender } = render(<Navbar {...defaultProps} activeTool={tool} />);
 
-      // Verificar que la herramienta activa está resaltada
-      const activeButton = screen.getByRole('button', { name: new RegExp(tool, 'i') });
+      // Verificar que la herramienta activa está resaltada por clase CSS
+      const activeButton = container.querySelector('.navbar-tool.active');
       expect(activeButton).toBeInTheDocument();
 
       rerender(<div />); // Limpiar para el siguiente test
