@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import L from 'leaflet';
 import { useMap } from '../../core/contexts/MapContext';
 import { Coordinates } from '../../core/types/gis.types';
 import './SearchPanel.css';

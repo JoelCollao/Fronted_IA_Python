@@ -1,4 +1,4 @@
-﻿import { LayerInfo } from '../components/map/LayerControl';
+﻿import { Layer } from '../core/types/gis.types';
 
 export interface LayerAnalysis {
   totalLayers: number;
@@ -6,14 +6,14 @@ export interface LayerAnalysis {
   lineLayers: number;
   pointLayers: number;
   layersByType: {
-    polygons: LayerInfo[];
-    lines: LayerInfo[];
-    points: LayerInfo[];
+    polygons: Layer[];
+    lines: Layer[];
+    points: Layer[];
   };
 }
 
 export class LayerAnalysisService {
-  static analyzeLayers(layers: LayerInfo[]): LayerAnalysis {
+  static analyzeLayers(layers: Layer[]): LayerAnalysis {
     const analysis: LayerAnalysis = {
       totalLayers: layers.length,
       polygonLayers: 0,

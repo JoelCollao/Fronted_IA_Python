@@ -1,4 +1,4 @@
-﻿import { LayerInfo } from '../components/map/LayerControl';
+﻿import { Layer } from '../core/types/gis.types';
 
 export interface BufferRequest {
   distance: number;
@@ -99,9 +99,9 @@ export class BufferService {
    * Filtra capas según el tipo de geometría solicitado
    */
   static filterLayersByGeometry(
-    layers: LayerInfo[],
+    layers: Layer[],
     geometryType?: 'Point' | 'LineString' | 'Polygon'
-  ): LayerInfo[] {
+  ): Layer[] {
     if (!geometryType) {
       return layers.filter(layer => layer.visible && layer.geometryType);
     }
@@ -128,8 +128,8 @@ export class BufferService {
    */
   static buildBufferRequest(
     message: string,
-    layers: LayerInfo[]
-  ): { request: BufferRequest; targetLayers: LayerInfo[] } | null {
+    layers: Layer[]
+  ): { request: BufferRequest; targetLayers: Layer[] } | null {
     if (!this.isBufferRequest(message)) {
       return null;
     }
@@ -155,7 +155,7 @@ export class BufferService {
   /**
    * Genera mensaje de confirmación al usuario
    */
-  static generateConfirmationMessage(request: BufferRequest, targetLayers: LayerInfo[]): string {
+  static generateConfirmationMessage(request: BufferRequest, targetLayers: Layer[]): string {
     if (targetLayers.length === 0) {
       return `No se encontraron capas cargadas ${request.geometryType ? `de tipo ${request.geometryType}` : ''} en el mapa.`;
     }

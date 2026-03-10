@@ -802,7 +802,7 @@ export const LayerPanel: React.FC = () => {
       if (layer.data?.features?.length > 0) {
         const firstFeature = layer.data.features[0];
         if (firstFeature.geometry.type === 'Point') {
-          const [lng, lat] = firstFeature.geometry.coordinates;
+          const [lng, lat] = firstFeature.geometry.coordinates as number[];
           map.setView([lat, lng], 16);
           console.log(`🎯 Centrado en: ${lat}, ${lng}`);
         }

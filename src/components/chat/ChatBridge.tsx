@@ -202,7 +202,7 @@ export const ChatBridge: React.FC = () => {
             );
           }
 
-          const polygon = L.polygon(coordinates, {
+          const polygon = L.polygon(coordinates as L.LatLngExpression[][], {
             color: '#ff6b35',
             fillColor: '#ff6b35',
             weight: 2,
@@ -245,6 +245,7 @@ export const ChatBridge: React.FC = () => {
         type: 'geojson' as const,
         visible: true,
         opacity: 1,
+        zIndex: 0,
         data: bufferGeojson,
         leafletLayer: layerGroup,
         markers: createdMarkers,
